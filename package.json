@@ -1,6 +1,6 @@
 {
   "name": "authservice",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Authentication Microservice for NodeJS APIs",
   "main": "index.js",
   "scripts": {
@@ -21,5 +21,15 @@
   "bugs": {
     "url": "https://github.com/MrSleider/authservice/issues"
   },
-  "homepage": "https://github.com/MrSleider/authservice#readme"
+  "homepage": "https://github.com/MrSleider/authservice#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^4.4.1",
+    "mongoose": "^5.11.17"
+  }
 }
