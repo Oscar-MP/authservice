@@ -14,7 +14,6 @@ class MongoConnection {
 
   constructor() {
     const url = `${config.mongodb.mongodb_url}${config.mongodb.database_name}`;
-    console.log(url)
     const mongoose_options = {
       useNewUrlParser: true,
       useFindAndModify: false,
@@ -24,7 +23,7 @@ class MongoConnection {
 
     mongoose.Promise = global.Promise;
 
-    this.connect(url);
+    this.connect(url, mongoose_options);
 
     // Event triggers
     mongoose.connection.on('connected', this.onConnect );
@@ -33,8 +32,8 @@ class MongoConnection {
     mongoose.connection.on('SIGNIT', this.onSignit );
   }
 
-  async connect (url) {
-    await mongoose.connect(url, this.mongoose_options);
+  async connect (url, opts) {
+    await mongoose.connect(url, opts);
   }
 
   // Event Handlers
