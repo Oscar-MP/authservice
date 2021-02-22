@@ -28,6 +28,21 @@ module.exports = {
 
     return true;
   },
+  removeFromObject: ( object, paramsToRemove, cloneObject ) => {
+    // Removes a set of parameters from a given object. paramsToRemove should be an array.
+    // If cloneObject is true, the original object won't be modified and a new one will be created.
+    // If cloneObject is true then the return of the function should be stored in a variable to work with, the
+    // original data will remain still.
+    var obj = cloneObject === true ? { ...object } : object;
+
+    for ( let param of  paramsToRemove ) {
+      if (Object.keys(obj).includes(param)) {
+        delete obj[param]
+      }
+    }
+
+    return obj;
+  },
   /**
     * From here we have clasified the methods
     */
