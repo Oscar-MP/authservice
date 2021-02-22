@@ -1,12 +1,21 @@
 'use strict'
 var User = require('../models/user.model.js');
+const UserService = require('./user.service.js');
+var utils = require('../common/utils.js');
+
 
 class AuthService {
 
   constructor () {}
 
   async SignUp ( data ) {
+    var user_data = await UserService.create(data);
 
+    if (!user_data) {
+      throw 'Failed to sign up';
+    }
+    
+    return utils.removeFromObject(user_data, ['password', 'role', '__v']);
   }
 
   async SignIn () {
@@ -17,3 +26,5 @@ class AuthService {
 
   }
 }
+
+module.exports = new AuthService();
