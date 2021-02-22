@@ -8,7 +8,8 @@
 
 const   mongoose  = require('mongoose');
 const   config    = require('./environment.js').getConfig();
-
+const   chalk     = require('chalk');
+const messages  = require('../src/common/messages.js');
 
 class MongoConnection {
 
@@ -23,7 +24,7 @@ class MongoConnection {
 
     mongoose.Promise = global.Promise;
 
-    this.connect(url, mongoose_options);
+    this.connection = this.connect(url, mongoose_options);
 
     // Event triggers
     mongoose.connection.on('connected', this.onConnect );
@@ -33,22 +34,23 @@ class MongoConnection {
   }
 
   async connect (url, opts) {
-    await mongoose.connect(url, opts);
+    messages.info('Connecting to MongoDB...');
+    return await mongoose.connect(url, opts);
   }
 
   // Event Handlers
   onConnect () {
-    console.log(`[*] Conexión con mongodb establecida en: ${config.mongodb.mongodb_url}`);
+    messages.success(`Conexión con mongodb establecida en: ${config.mongodb.mongodb_url}`)
   }
 
   onError (err) {
-    console.log('[!] No se ha podido establecer la conexión con mongodb');
+    console.log(chalk.red('[!] No se ha podido establecer la conexión con mongodb'));
     console.error('[-]', err.message);
     process.exit(0);
   }
 
   onDisconnect () {
-    console.log('[-] Se ha desconectado de mongodb');
+    console.log(chalk.red('[!] Se ha desconectado de mongodb'));
   }
 
   onSignit () {
@@ -57,6 +59,11 @@ class MongoConnection {
       console.log('[-] Conexión cerrada.');
       process.exit(0);
     })
+  }
+
+  isConnected() {
+    const states = ['disconected', 'connected', 'connecting', 'disconnecting'];
+    return states[mongoose.connection.readyState];
   }
 }
 
