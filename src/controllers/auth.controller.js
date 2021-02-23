@@ -12,8 +12,8 @@ module.exports = {
         data: registrationData
       });
     } catch ( err ) {
-      console.log('error', err)
-      return res.status(500).send({ message: 'There is an error'})
+      console.log('Something went wrong:', err)
+      return res.status(500).send({ message: 'Something went wrong! We could not proceed with the signup'})
     }
   },
   signin: async (req, res) => {
