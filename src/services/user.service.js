@@ -1,13 +1,38 @@
 'use strict'
-var User = require('../models/user.model.js');
-var mongoose = require('mongoose')
-class UserService {
 
-  constructor () {}
+var Service   = require('./Service.js');
+var User      = require('../models/user.model.js');
+var mongoose  = require('mongoose');
+var utils = require('../common/utils.js');
+
+const private_params = ['password', '__v', 'role'];
+
+class UserService extends Service {
+
+  constructor () {
+    super(User);
+  }
 
   async create ( data ) {
 
-    var user = new User({
+    if (!data.role) {
+      data.role = new mongoose.Types.ObjectId;
+    }
+
+    data.alias = data.alias || data.username;
+
+    try {
+      var response = await this.save(data);
+      if (response)
+        return utils.removeFromObject(response, private_params, true);
+    } catch (e) {
+      throw e;
+    }
+
+    return false;
+
+
+    /*var user = new User({
       _id: new mongoose.Types.ObjectId,
       username: data.username,
       alias: data.alias || data.username,
@@ -26,7 +51,7 @@ class UserService {
       console.log('[!] Error: \n', e._message);
     }
 
-    return false;
+    return false;*/
   }
 
   async get () {

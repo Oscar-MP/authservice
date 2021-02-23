@@ -38,6 +38,17 @@ class Service {
 
   async save( data ) {
 
+    try {
+      var res = await this.schema.create(data);
+
+      if (res) {
+        return res._doc ? res._doc : res; // this should be fixed
+      }
+    } catch ( e ) {
+      throw e._message;
+    }
+
+    return false;
   }
 
   async update ( _id, data ) {

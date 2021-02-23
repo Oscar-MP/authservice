@@ -14,7 +14,7 @@ class AuthService {
       throw 'Failed to sign up';
     }
 
-    return utils.removeFromObject(user_data, ['password', 'role', '__v']);
+    return user_data;
   }
 
   async SignIn () {
