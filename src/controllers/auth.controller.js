@@ -18,6 +18,27 @@ module.exports = {
   },
   signin: async (req, res) => {
 
+    const params = req.body;
+
+    try {
+      const session = await service.SignIn(params.username, params.password);
+
+      if (!session) {
+        return res.status(401).send({
+          message: 'Could not login'
+        });
+      }
+
+      return res.status(200).send({
+        message: 'You have successfully logged in',
+        data: session
+      });
+    } catch ( err ) {
+      // Here an error have to be analized and if there is an error because of the client we will return error
+      // if the error is because of the server then we will log it and avoid prompting any detail.
+      console.log('[!] LOGIN ERROR: ', err)
+      return res.status(500).send({ message: 'Something went wrong during the login. Try again later... '});
+    }
   },
   signout: async (req, res) => {
 
