@@ -45,6 +45,18 @@ class Session extends Service {
     }
   }
 
+  static async get_active_session () {
+      // Returns a list of all active sessions
+      var service = new Service(model);
+
+      try {
+        return await service.getBy('active', 'true');
+      } catch ( e ) {
+        console.log('[!] Error trying to list the current active sessions', e);
+        return false;
+      }
+  }
+
   generate_token () {
     return 'thisisanawesometoken';
   }
