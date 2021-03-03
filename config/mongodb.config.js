@@ -9,7 +9,7 @@
 const   mongoose  = require('mongoose');
 const   config    = require('./environment.js').getConfig();
 const   chalk     = require('chalk');
-const messages  = require('../src/common/messages.js');
+const messages  = require('../src/common/helpers/messages.js');
 
 class MongoConnection {
 
