@@ -17,6 +17,7 @@ module.exports.set_routes = (server) => {
   });
 
   server.use('/', routes.auth, routes.users);
+  server.use('/session', routes.sessions);
 
 
   // If the requested route does not match with any route we will return
