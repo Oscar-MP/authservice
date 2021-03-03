@@ -71,6 +71,19 @@ class UserService extends Service {
     return users;
   }
 
+  async getById( _id, get_full_info = false) {
+    // Fetchs a user by its ID
+
+    try {
+      var user = this.get_doc(await this.get(_id));
+    } catch (e) {
+      console.log('[!] Error trying to fetch the user ' + _id, e);
+      return false;
+    }
+
+    return get_full_info ? user : utils.removeFromObject(user, private_params);
+  }
+
   async get_user ( identificator ) {
     // This function identifies and returns users. The identificator can be the _id, the email or the username
 
