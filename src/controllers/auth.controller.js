@@ -4,7 +4,7 @@ const { Logger }        = require('../common/helpers/logger.js');
 
 
 module.exports = {
-  signup: async (req, res) => {
+  signup: async (req, res, next) => {
     const params = req.body;
 
     try {
@@ -19,7 +19,7 @@ module.exports = {
       next(err);
     }
   },
-  signin: async (req, res) => {
+  signin: async (req, res, next) => {
 
     const { username, password } = req.body;
 
@@ -41,7 +41,7 @@ module.exports = {
       next(err);
     }
   },
-  signout: async (req, res) => {
+  signout: async (req, res, next) => {
 
   }
 };
