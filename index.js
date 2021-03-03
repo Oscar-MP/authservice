@@ -7,10 +7,11 @@
  */
 
 const env       = 'dev'; // This will be implemented somewhere else
-const messages  = require('./src/common/messages.js');
 const chalk     = require('chalk');
+const { ErrorHandler } = require('./src/common/helpers/error.js');
+const { Logger } = require('./src/common/helpers/logger.js');
 
-messages.info('Iniciando aplicación...');
+Logger.info('Iniciando aplicación...');
 
 var mongo       = require('./config/mongodb.config.js');
 const config = require('./config/environment.js').getConfig(env); //dev
@@ -27,7 +28,6 @@ server.listen( config.PORT )
                                     `- DB: ${mongo.isConnected()}\n`))
   })
   .on('error', (err) => {
-    console.log('[!] Error al iniciar la aplicación');
-    console.error('[-]', err.message);
+    Logger.error('Error al iniciar la aplicación', err, true);
     process.exit(0);
   });
