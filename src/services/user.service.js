@@ -26,6 +26,7 @@ class UserService extends Service {
       if (response)
         return utils.removeFromObject(response, private_params, true);
     } catch (e) {
+      console.log('THERE IS AN ERROR!!!', e)
       throw e;
     }
 
@@ -54,8 +55,36 @@ class UserService extends Service {
     return false;*/
   }
 
-  async get () {
+  async get_users () {
+    // Returns all users
+    var users = await this.get_all();
 
+    if (!users) {
+      // Any user returned
+    }
+
+    // We should remove some params from the user data
+    users = users.map((item) => {
+      return utils.removeFromObject(item, private_params); // The fucking ._doc should be fixed
+    });
+
+    return users;
+  }
+
+  async get_user ( identificator ) {
+    // This function identifies and returns users. The identificator can be the _id, the email or the username
+
+    var res;
+
+    try {
+
+      if ( !utils.isEmpty((res = await this.getByEmail(identificator))) ) return res[0];
+      else if ( !utils.isEmpty((res = await this.getByUsername(identificator)))) return res[0];
+
+    } catch (err) {
+      console.log('ERROR: ',err);
+    }
+    return false;
   }
 
   async update () {
@@ -66,6 +95,13 @@ class UserService extends Service {
 
   }
 
+  async getByEmail (mail) {
+    return this.schema.find({ email: mail }).exec();
+  }
+
+  async getByUsername (user) {
+    return this.schema.find({ username: user }).exec();
+  }
 
   static async exists ( user ) {
 

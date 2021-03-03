@@ -24,16 +24,32 @@ class Service {
     return false;
   }
 
-  async getBy( param ) {
+  async getBy( param, value ) {
+    console.log('Getting by ', param)
+    var parameters = {};
+    parameters[param] = value;
 
+    try {
+      const res = await this.schema.find(parameters).exec();
+      console.log('RES: ', res);
+      return res;
+    } catch ( e ) {
+      console.log(`[!] Error trying to get an item with this param:value = ${param}:${value}`);
+    }
+
+    return false
   }
 
   async searchBy ( param, value ) {
 
   }
 
-  async getAll() {
+  async get_all() {
+    // This method should be improved with filters, sortBy, OrderBy and limit results
+    var items = await this.schema.find();
 
+
+    return this.get_doc(items);
   }
 
   async save( data ) {
@@ -42,9 +58,10 @@ class Service {
       var res = await this.schema.create(data);
 
       if (res) {
-        return res._doc ? res._doc : res; // this should be fixed
+        return this.get_doc(res);
       }
     } catch ( e ) {
+      console.log('AGAIN AN ERROR!!!', e)
       throw e._message;
     }
 
@@ -58,6 +75,22 @@ class Service {
   async delete ( _id ) {
 
   }
+
+
+  get_doc ( items ) {
+    // This method will return the _doc of a item or the _doc of many items.
+
+    if (Array.isArray(items)) {
+      return items.map((item) => {
+        return item._doc != undefined ? item._doc : item;
+      });
+    }
+
+    items = {...items};
+
+    return items._doc ? items._doc : items;
+  }
 }
+
 
 module.exports = Service;
