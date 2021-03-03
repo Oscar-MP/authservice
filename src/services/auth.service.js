@@ -12,8 +12,7 @@ class AuthService {
     var user_data = await UserService.create(data);
 
     if (!user_data) {
-      console.log('err')
-      throw 'Failed to sign up';
+      throw new ErrorHandler(500, 'Could not create the user during the signup');
     }
 
     return user_data;

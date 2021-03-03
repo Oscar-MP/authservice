@@ -26,33 +26,11 @@ class UserService extends Service {
       if (response)
         return utils.removeFromObject(response, private_params, true);
     } catch (e) {
-      console.log('THERE IS AN ERROR!!!', e)
-      throw e;
+      Logger.error('Error creating a user', e);
+      throw new ErrorHandler(500, 'Error creating a new user', e);
     }
 
     return false;
-
-
-    /*var user = new User({
-      _id: new mongoose.Types.ObjectId,
-      username: data.username,
-      alias: data.alias || data.username,
-      email: data.email,
-      password: data.password,
-      role: new mongoose.Types.ObjectId
-    });
-
-    try {
-      const saved_data = await user.save();
-
-      if (saved_data) {
-        return saved_data._doc; // Esto hay que cambiarlo
-      }
-    } catch (e) {
-      console.log('[!] Error: \n', e._message);
-    }
-
-    return false;*/
   }
 
   async get_users () {
