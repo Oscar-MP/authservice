@@ -14,8 +14,9 @@ var handleError = (err, req, res, next) => {
     return err.send(res);
   } else {
 
+    let message = err.status >= 500 || !err.status ? 'Internal Server Error!' : (err.message || err._message) || 'Unexpected error happened!';
     return res.status( err.status ? err.status : 500).send({
-      message: err.message || err._message ? err.message || err._message : 'Unexpected error happened!'
+      message: message
     });
   }
 }
