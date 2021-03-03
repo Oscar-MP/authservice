@@ -1,4 +1,6 @@
-const service = require('../services/user.service.js');
+const service           = require('../services/user.service.js');
+const { ErrorHandler }  = require('../common/helpers/error.js');
+const { Logger }        = require('../common/helpers/logger.js');
 
 module.exports = {
   get_users: async (req, res, next) => {
@@ -12,10 +14,8 @@ module.exports = {
         data: users
       });
     } catch (e) {
-      console.log('[!] Error listing users: ', e)
-      return res.status(500).send({
-        message: 'Could not list the users'
-      });
+      Logger.error('Could not list users', e);
+      next(e);
     }
   },
   get_user: async (req, res, next) => {
@@ -25,21 +25,19 @@ module.exports = {
     try {
       var user = await service.getById(id);
     } catch (e) {
-      console.log(`[!] Error listing the user with id: ${id}`);
-      return res.status(500).send({
-        message: 'Could not list the user'
-      });
+      Logger.error(`Error listing the user with id: ${id}`)
+      next(e);
     }
 
     if (!user) {
-      return res.status(404).send({
-        message: 'User not found'
-      });
+      next(new ErrorHandler(404, `User '${id}' not found.`));
+    } else {
+      return res.status(200).send({
+        message: 'User has successfully listed',
+        data: user
+      })
     }
 
-    return res.status(200).send({
-      message: 'User has successfully listed',
-      data: user
-    })
+    next(undefined);
   }
 };

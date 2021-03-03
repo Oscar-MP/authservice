@@ -1,4 +1,7 @@
 const service = require('../services/auth.service.js');
+const { ErrorHandler }  = require('../common/helpers/error.js');
+const { Logger }        = require('../common/helpers/logger.js');
+
 
 module.exports = {
   signup: async (req, res) => {
@@ -12,21 +15,19 @@ module.exports = {
         data: registrationData
       });
     } catch ( err ) {
-      console.log('Something went wrong:', err)
-      return res.status(500).send({ message: 'Something went wrong! We could not proceed with the signup'})
+      Logger.error('Could not perform the sign up operation', err);
+      next(err);
     }
   },
   signin: async (req, res) => {
 
-    const params = req.body;
+    const { username, password } = req.body;
 
     try {
-      const session = await service.SignIn(params.username, params.password);
+      const session = await service.SignIn(username, password);
 
       if (!session) {
-        return res.status(401).send({
-          message: 'Could not login'
-        });
+        throw new ErrorHandler(401, 'Could not login!');
       }
 
       return res.status(200).send({
@@ -36,8 +37,8 @@ module.exports = {
     } catch ( err ) {
       // Here an error have to be analized and if there is an error because of the client we will return error
       // if the error is because of the server then we will log it and avoid prompting any detail.
-      console.log('[!] LOGIN ERROR: ', err)
-      return res.status(500).send({ message: 'Something went wrong during the login. Try again later... '});
+      Logger.error('Something went wrong during the login.', err);
+      next(err);
     }
   },
   signout: async (req, res) => {
