@@ -7,7 +7,7 @@ module.exports = {
     // Checks if the input is empty or undefined
     return  input === null                  ||
             input === undefined             ||
-            input.replace(/\s/g, '') === '' ||
+            // input.replace(/\s/g, '') === '' ||
             (input.isArray ? input.length === 0 :
               (typeof input === 'object' ? Object.keys(input).length === 0 : false)
             );
@@ -28,19 +28,19 @@ module.exports = {
 
     return true;
   },
-  removeFromObject: ( object, paramsToRemove, cloneObject ) => {
+  removeFromObject: ( object, paramsToRemove, cloneObject = false ) => {
     // Removes a set of parameters from a given object. paramsToRemove should be an array.
     // If cloneObject is true, the original object won't be modified and a new one will be created.
     // If cloneObject is true then the return of the function should be stored in a variable to work with, the
     // original data will remain still.
-    var obj = cloneObject === true ? { ...object } : object;
+    var obj = cloneObject ? { ...object } : object || {};
 
     for ( let param of  paramsToRemove ) {
+
       if (Object.keys(obj).includes(param)) {
         delete obj[param]
       }
     }
-
     return obj;
   },
   /**
