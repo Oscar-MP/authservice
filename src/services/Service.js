@@ -1,7 +1,8 @@
 'use strict'
 
-var mongoose = require('mongoose');
-
+var mongoose           = require('mongoose');
+const { Logger }       = require('../common/helpers/logger.js');
+const { ErrorHandler } = require('../common/helpers/error.js');
 
 class Service {
 
@@ -18,23 +19,25 @@ class Service {
       return res;
 
     } catch ( e ) {
-      console.log(`[!] Error trying to get the item ${_id} from the ${this.schema.constructor.modelName} schema`);
+      Logger.error(`Error trying to get the item ${_id} from the ${this.schema.constructor.modelName} schema`, e);
+      throw new ErrorHandler(500, 'Failed to perform the GET operation to the database', e);
     }
 
     return false;
   }
 
   async getBy( param, value ) {
-    console.log('Getting by ', param)
+
     var parameters = {};
     parameters[param] = value;
 
     try {
       const res = await this.schema.find(parameters).exec();
-      console.log('RES: ', res);
       return res;
+
     } catch ( e ) {
-      console.log(`[!] Error trying to get an item with this param:value = ${param}:${value}`);
+      Logger.error(`Error trying to get an item with this param:value = ${param}:${value}`);
+      throw new ErrorHandler(500, 'Failed to perform a GET operation to the database', e);
     }
 
     return false
@@ -46,10 +49,15 @@ class Service {
 
   async get_all() {
     // This method should be improved with filters, sortBy, OrderBy and limit results
-    var items = await this.schema.find();
 
+    try {
+      var items = await this.schema.find();
+      return this.get_doc(items);
 
-    return this.get_doc(items);
+    } catch (e) {
+      Logger.error('Error getting the items of a collection', e);
+      throw new ErrorHandler(500, 'Failed to perform a find operation to the database', e);
+    }
   }
 
   async save( data ) {
@@ -61,8 +69,8 @@ class Service {
         return this.get_doc(res);
       }
     } catch ( e ) {
-      console.log('AGAIN AN ERROR!!!', e)
-      throw e._message;
+      Logger.error('Could not save data into a collection', e);
+      throw new ErrorHandler(500, 'Could not save data into the database', e);
     }
 
     return false;
