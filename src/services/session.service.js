@@ -17,7 +17,7 @@ class Session extends Service {
       //this.create_session();
     }
 
-    console.log(this.get_all_my_sessions());
+    //console.log(this.get_all_my_sessions());
 
   }
 
@@ -31,8 +31,7 @@ class Session extends Service {
       // Once there is no active session we start the new one
       this.save(this.get_session_class_data())
     } catch (e) {
-      console.log('[!] Could not create the session!', e);
-      return false;
+      throw e;
     }
   }
 
@@ -40,20 +39,17 @@ class Session extends Service {
     try {
       return await this.getBy('userid', this.userid);
     } catch (e) {
-      console.log('[!] Could not list all sessions', e);
-      return false;
+      throw e
     }
   }
 
   static async get_active_session () {
       // Returns a list of all active sessions
-      var service = new Service(model);
-
       try {
+        var service = new Service(model);
         return await service.getBy('active', 'true');
       } catch ( e ) {
-        console.log('[!] Error trying to list the current active sessions', e);
-        return false;
+        throw e;
       }
   }
 
