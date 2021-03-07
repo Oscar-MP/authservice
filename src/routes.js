@@ -7,6 +7,7 @@
  */
 
 const routes  = require('./routes/index.js');
+const { ErrorHandler } = require('./common/helpers/error.js');
 
 module.exports.set_routes = (server) => {
 
@@ -22,9 +23,7 @@ module.exports.set_routes = (server) => {
 
   // If the requested route does not match with any route we will return
   // a 404 error.
-  server.use('/*', (req, res) => {
-    res.status(404).send({
-      message: 'Route not found'
-    });
+  server.use('/*', (req, res, next) => {
+    next(new ErrorHandler(404, `Route '${req.originalUrl}' not found!`));
   });
 }
