@@ -23,8 +23,7 @@ var handleError = (err, req, res, next) => {
 
 var logError = (err, req, res, next) => {
   // Logs every error
-  Logger.error('An error has been intercepted by the controller');
-
+  Logger.error('An error has been intercepted by the controller', err);
   return next(err);
 }
 
