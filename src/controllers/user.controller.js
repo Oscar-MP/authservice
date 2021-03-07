@@ -41,9 +41,34 @@ module.exports = {
     next(undefined);
   },
   update_user: async (req, res, next) => {
+    const _id = req.params.id;
 
+    try {
+      var updated_user = await service.update(_id, req.body);
+
+      return res.status(200).send({
+        message: 'User updated successfully!',
+        data: updated_user,
+        updated: true
+      })
+    } catch (e) {
+      next(e);
+    }
   },
-  remove_user: async (req, res, next) => {},
+  remove_user: async (req, res, next) => {
+    const _id = req.params.id;
+
+    try {
+      var removed_user = await service.delete(_id);
+      return res.status(200).send({
+        message: 'User removed successfully',
+        data: removed_user,
+        deleted: true
+      });
+    } catch (e) {
+      next(e);
+    }
+  },
   get_user_history: async (req, res, next) => {
     res.status(200).send({ ok:'ok'})
   }
