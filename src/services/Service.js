@@ -19,8 +19,13 @@ class Service {
       return res;
 
     } catch ( e ) {
+
+      let error = ErrorHandler.isAClientError(e) ?
+                    new ErrorHandler(400, 'Malformed query caused an error', e):
+                    new ErrorHandler(500, 'Failed to perform the GET operation to the database', e);
+
       Logger.error(`Error trying to get the item ${_id} from the ${this.schema.constructor.modelName} schema`, e);
-      throw new ErrorHandler(500, 'Failed to perform the GET operation to the database', e);
+      throw error;
     }
 
     return false;

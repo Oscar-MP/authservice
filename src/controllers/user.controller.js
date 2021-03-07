@@ -25,8 +25,8 @@ module.exports = {
     try {
       var user = await service.getById(id);
     } catch (e) {
-      Logger.error(`Error listing the user with id: ${id}`)
-      next(e);
+      Logger.error(`Error listing the user with id: ${id}`, e)
+      return next(e);
     }
 
     if (!user) {
@@ -39,5 +39,13 @@ module.exports = {
     }
 
     next(undefined);
+  },
+  update_user: async (req, res, next) => {
+
+  },
+  remove_user: async (req, res, next) => {},
+  get_user_history: async (req, res, next) => {
+    res.status(200).send({ ok:'ok'})
   }
+
 };

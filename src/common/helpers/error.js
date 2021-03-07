@@ -1,11 +1,10 @@
 'use strict'
 
 class ErrorHandler extends Error {
-  constructor (status, message) {
+  constructor (status, message, params) {
     super();
     this.status     = status      || 500;
     this.message    = message     || 'Unexpected error';
-
   }
 
   send ( res ) {
@@ -17,6 +16,16 @@ class ErrorHandler extends Error {
   }
 
   static get_status_code_message ( code ) {
+
+  }
+
+  static isAClientError( error ) {
+    // THIS METHOD SHOULD BE CHANGED TO WORK WELL IN EVERY CASE
+    const malformed_posible_params = [ '_id' ];
+
+    // Checks if the error comes from the malformed _id
+    if (error.path == '_id') return true;
+
 
   }
 }

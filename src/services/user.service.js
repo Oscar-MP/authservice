@@ -5,6 +5,10 @@ var User      = require('../models/user.model.js');
 var mongoose  = require('mongoose');
 var utils = require('../common/utils.js');
 
+const { Logger } = require('../common/helpers/logger.js');
+const { ErrorHandler } = require('../common/helpers/error.js');
+
+
 const private_params = ['password', '__v', 'role'];
 
 class UserService extends Service {
@@ -55,8 +59,12 @@ class UserService extends Service {
     try {
       var user = this.get_doc(await this.get(_id));
     } catch (e) {
-      console.log('[!] Error trying to fetch the user ' + _id, e);
-      return false;
+      Logger.error('Could not fetch the user with the ID: ' + _id, e);
+      throw e;
+    }
+
+    if (utils.isEmpty(user)) {
+      throw new ErrorHandler(404, `User with ID: ${_id} not found in the server!`);
     }
 
     return get_full_info ? user : utils.removeFromObject(user, private_params);
@@ -68,13 +76,18 @@ class UserService extends Service {
     var res;
 
     try {
-
-      if ( !utils.isEmpty((res = await this.getByEmail(identificator))) ) return res[0];
-      else if ( !utils.isEmpty((res = await this.getByUsername(identificator)))) return res[0];
+      if ( !utils.isEmpty((res = await this.getById(identificator))) ) return res[0];
+      else if ( !utils.isEmpty((res = await this.getBy('email', identificator))) ) return res[0];
+      else if ( !utils.isEmpty((res = await this.getBy('username', identificator)))) return res[0];
+      else {
+        throw new ErrorHandler(404, `User '${identificator}' not found in the server!`);
+      }
 
     } catch (err) {
-      console.log('ERROR: ',err);
+      Logger.error('Could not get the user with the identificator: ' + identificator);
+      throw err;
     }
+
     return false;
   }
 
@@ -87,6 +100,8 @@ class UserService extends Service {
   }
 
   async getByEmail (mail) {
+
+
     return this.schema.find({ email: mail }).exec();
   }
 

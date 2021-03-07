@@ -91,6 +91,12 @@ class Session extends Service {
     // Get's the IP of the client. We need the request object
     return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   }
+
+  static craft_session ( data ) {
+    // This function will create a session object based on the given data.
+
+    return new Session(data, false);
+  }
 }
 
 module.exports = Session;
