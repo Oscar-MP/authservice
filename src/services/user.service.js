@@ -91,14 +91,6 @@ class UserService extends Service {
     return false;
   }
 
-  async update () {
-
-  }
-
-  async delete() {
-
-  }
-
   async getByEmail (mail) {
 
 
