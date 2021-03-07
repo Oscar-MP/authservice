@@ -48,15 +48,18 @@ class Service {
     return false
   }
 
-  async searchBy ( param, value ) {
-
-  }
-
-  async get_all() {
+  async get_all( options ) {
     // This method should be improved with filters, sortBy, OrderBy and limit results
+    let { filter, limit, sortBy } = options || {};
+
+    filter  = filter    ? filter : {};
+    limit   = limit     ? Number(limit) : 100;
+    sortBy  = sortBy    ? sortBy: {'createdAt': -1};
 
     try {
-      var items = await this.schema.find();
+      var items = await this.schema.find  ( filter )
+                                   .sort  ( sortBy )
+                                   .limit ( limit );
       return this.get_doc(items);
 
     } catch (e) {
@@ -72,6 +75,8 @@ class Service {
 
       if (res) {
         return this.get_doc(res);
+      } else {
+        throw new ErrorHandler(500);
       }
     } catch ( e ) {
       Logger.error('Could not save data into a collection', e);
@@ -82,14 +87,33 @@ class Service {
   }
 
   async update ( _id, data ) {
+    try {
+      var item = await this.schema.findByIdAndUpdate(_id, data, { 'new': true})
 
+      return item;
+
+    } catch (e) {
+      Logger.error('Could not update the item!', e);
+      throw new ErrorHandler(500, 'Could not update', e);
+    }
   }
 
   async delete ( _id ) {
+    try {
+      var item = await this.schema.findByIdAndDelete(_id);
 
+      if (!item) throw new ErrorHandler(404, 'Item not found');
+
+      return item;
+
+    } catch (e) {
+      Logger.error('Could not remove the item!', e);
+      throw e;
+    }
   }
 
 
+  // Helper methods
   get_doc ( items ) {
     // This method will return the _doc of a item or the _doc of many items.
 
