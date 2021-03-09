@@ -20,6 +20,7 @@ class UserService extends Service {
   async create ( data ) {
 
     if (!data.role) {
+      // We should assign the lowest role, so we must find the role with permission level = 1;
       data.role = new mongoose.Types.ObjectId;
     }
 

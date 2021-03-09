@@ -17,7 +17,7 @@ module.exports.set_routes = (server) => {
    });
   });
 
-  server.use('/', routes.auth, routes.users);
+  server.use('/', routes.auth, routes.users, routes.roles);
   server.use('/session', routes.sessions);
 
 
