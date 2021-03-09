@@ -11,6 +11,20 @@ class AuthService {
   constructor () {}
 
   async SignUp ( data ) {
+
+    // We must check first if the username or the email is already taken
+    try {
+      // Checking the username:
+      if (!utils.isEmpty(await UserService.getByUsername(data.username)))
+        throw new ErrorHandler(400, 'The username already exists');
+      // Checking the email:
+      if (!utils.isEmpty(await UserService.getByEmail(data.email)))
+        throw new ErrorHandler(400, 'The email already exists');
+    } catch (err) {
+      throw err;
+    }
+
+    // Now we proceed with the signup
     var user_data = await UserService.create(data);
 
     if (!user_data) {
