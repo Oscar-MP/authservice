@@ -3,6 +3,8 @@
 const chalk = require('chalk');
 const { ErrorHandler } = require('./error.js');
 const utils = require('../utils.js')
+const Log = console.log;
+
 
 class Logger {
 
@@ -21,7 +23,7 @@ class Logger {
 
     output = isCritical ? chalk.bgRed(chalk.white(output)) : chalk.red(output);
 
-    console.log(output);
+    Log(output);
 
     Logger.print_error_info(error);
   }
@@ -30,7 +32,7 @@ class Logger {
 
     let output = chalk.bold('[-] ') + message;
 
-    console.log((!banner ? chalk.blue(output) : chalk.bgBlue(chalk.white(output))));
+    Log((!banner ? chalk.blue(output) : chalk.bgBlue(chalk.white(output))));
   }
 
   static warning ( message, error, banner ) {
@@ -40,7 +42,7 @@ class Logger {
 
       output = banner ? chalk.bgYellow(chalk.red(output)) : chalk.yellow(output);
 
-      console.log(output)
+      Log(output)
 
       Logger.print_error_info(error, 'warning');
     } catch (e){ console.log( 'FAILED AGAIN', e)}
@@ -71,9 +73,7 @@ class Logger {
           message += chalk.italic.blue(error.message);
           break;
       }
-
-      console.log(message);
-
+      Log(message);
     }
   }
 }
