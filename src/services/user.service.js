@@ -29,9 +29,9 @@ class UserService extends Service {
     try {
       var response = await this.save(data);
       if (response)
+        console.log('USER: ', response)
         return utils.removeFromObject(response, private_params, true);
     } catch (e) {
-      Logger.error('Error creating a user', e);
       throw new ErrorHandler(500, 'Error creating a new user', e);
     }
 
@@ -73,11 +73,11 @@ class UserService extends Service {
 
   async get_user ( identificator ) {
     // This function identifies and returns users. The identificator can be the _id, the email or the username
-
+    const ObjectId = mongoose.Types.ObjectId;
     var res;
 
     try {
-      if ( !utils.isEmpty((res = await this.getById(identificator))) ) return res[0];
+      if ( ObjectId.isValid(identificator) && !utils.isEmpty((res = await this.getById(identificator))) ) return res[0];
       else if ( !utils.isEmpty((res = await this.getBy('email', identificator))) ) return res[0];
       else if ( !utils.isEmpty((res = await this.getBy('username', identificator)))) return res[0];
       else {

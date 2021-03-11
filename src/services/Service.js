@@ -3,6 +3,7 @@
 var mongoose           = require('mongoose');
 const { Logger }       = require('../common/helpers/logger.js');
 const { ErrorHandler } = require('../common/helpers/error.js');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 class Service {
 
@@ -13,6 +14,10 @@ class Service {
   }
 
   async get ( _id ) {
+
+    if (!ObjectId.isValid(_id))
+      throw new ErrorHandler(400, 'Not a valid ID');
+
     try {
       var res = await this.schema.findById( _id );
 
