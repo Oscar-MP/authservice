@@ -45,10 +45,13 @@ class AuthService {
       throw err;
     }
 
-    if (user.password !== password) {
+    if (!await user.verifyPassword(password)) {
       // The passwords doesn't match
       return false;
     }
+
+    // If the user is not activated we won't proceed with the session creation
+    if (!user.activated) throw new ErrorHandler(401, 'You must first activate your account before being able to login!');
 
     // The passwords are the same so we start a new session
     try {
