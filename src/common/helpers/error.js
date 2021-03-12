@@ -9,6 +9,7 @@ class ErrorHandler extends Error {
     this.name       = 'Unknown error';
     this.message    = message     || 'Unexpected error';
     this.stack      = [];
+    this.print      = true;
 
     if ( params ) {
 
@@ -27,6 +28,8 @@ class ErrorHandler extends Error {
           this.status = 400;
         }
       }
+
+      if (params.print === false) this.print = false;
 
     }
   }
