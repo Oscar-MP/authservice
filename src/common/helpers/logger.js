@@ -37,18 +37,23 @@ class Logger {
 
   static warning ( message, error, banner ) {
 
-    try {
-      let output = chalk.bold('[!] ') + message;
+    let output = chalk.bold('[!] ') + message;
 
-      output = banner ? chalk.bgYellow(chalk.red(output)) : chalk.yellow(output);
+    output = banner ? chalk.bgYellow(chalk.red(output)) : chalk.yellow(output);
 
-      Log(output)
+    Log(output)
 
-      Logger.print_error_info(error, 'warning');
-    } catch (e){ console.log( 'FAILED AGAIN', e)}
+    Logger.print_error_info(error, 'warning');
   }
 
   static message ( message ) {
+
+  }
+
+  static success ( message ) {
+    let output = chalk.green(chalk.bold('[*] ') + message);
+
+    Log(output);
 
   }
 
@@ -58,22 +63,24 @@ class Logger {
     level = level || 'error';
 
     if (!utils.isEmpty(error)) {
-      let message = chalk.bold.red('[-] ');
+      let header   = chalk.bold.red(' -  ');
+
+      const colors = {
+        error: 'red',
+        warning: 'yellow',
+        info: 'blue'
+      };
+
+
+      if ( error instanceof ErrorHandler && error.stack.length > 0) {
+        // We will print the stack
+        error.stack.forEach( (e) => {
+          Log(chalk.italic[colors[level]](`${header}${e}`));
+        });
+      }
 
       let error_message = utils.isEmpty(error.message) ? error : error.message;
-
-      switch (level) {
-        case 'error':
-          message += chalk.italic.red(error.message);
-          break;
-        case 'warning':
-          message += chalk.italic.yellow(error.message);
-          break;
-        case 'info':
-          message += chalk.italic.blue(error.message);
-          break;
-      }
-      Log(message);
+      Log(chalk.italic[colors[level]](`${header}${error_message}`));
     }
   }
 }
