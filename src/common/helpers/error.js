@@ -1,10 +1,34 @@
 'use strict'
 
+const ValidationError = require('mongoose').Error.ValidationError;
+
 class ErrorHandler extends Error {
   constructor (status, message, params) {
     super();
     this.status     = status      || 500;
+    this.name       = 'Unknown error';
     this.message    = message     || 'Unexpected error';
+    this.stack      = [];
+
+    if ( params ) {
+
+      if ( params instanceof ErrorHandler ) {
+        this.stack.push(params.stack);
+      } else {
+        params.message  ? this.stack.push(params.message) : null;
+      }
+
+      this.name = params.errorName ? params.errorName : this.name;
+
+      if (!status) {
+        let err_nature = ErrorHandler.checkErrorNature(params);
+
+        if ( err_nature === 'client' ) {
+          this.status = 400;
+        }
+      }
+
+    }
   }
 
   send ( res ) {
@@ -15,9 +39,42 @@ class ErrorHandler extends Error {
     });
   }
 
-  static get_status_code_message ( code ) {
+  static checkErrorNature ( error ) {
+    if ( error instanceof ValidationError ) return 'client';
+
+    return 'server';
+  }
+
+  static handleMongoError (e, message) {
+
+    var error;
+
+    if ( ErrorHandler.checkErrorNature(e) == 'client' ) {
+      error = new ErrorHandler(400, e._message, e);
+    } else {
+      error = new ErrorHandler(500, message, e)
+    }
+
+    return error;
+  }
+
+  static stack ( error, message ) {
+
+    if (error instanceof ErrorHandler) {
+      error.stack.push(message);
+      return error;
+    }
+
+    if (error && error.message) {
+      error.message = message + '\n' + error.message;
+      return error;
+    }
+
+    return error;
 
   }
+
+
 
   static isAClientError( error ) {
     // THIS METHOD SHOULD BE CHANGED TO WORK WELL IN EVERY CASE
@@ -26,13 +83,6 @@ class ErrorHandler extends Error {
     // Checks if the error comes from the malformed _id
     if (error.path == '_id') return true;
 
-
-  }
-}
-
-class HTTP_Error extends ErrorHandler {
-  constructor(status, message) {
-    super(status, message);
 
   }
 }
