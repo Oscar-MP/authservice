@@ -51,7 +51,8 @@ class AuthService {
     }
 
     // If the user is not activated we won't proceed with the session creation
-    if (!user.activated) throw new ErrorHandler(401, 'You must first activate your account before being able to login!',  { errorName: 'Unauthorized' });
+    if (!user.activated)
+      throw new ErrorHandler(401, 'You must first activate your account before being able to login!',  { errorName: 'Unauthorized', print: false });
 
     // The passwords are the same so we start a new session
     try {
