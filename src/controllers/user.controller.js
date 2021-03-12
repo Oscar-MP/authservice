@@ -44,6 +44,11 @@ module.exports = {
     try {
       var updated_user = await service.update(_id, req.body);
 
+      if (!updated_user) {
+        // If no data was returned is because no user was found to update
+        return next( new ErrorHandler(404, `User '${_id}' not found`, { print: false }));
+      }
+
       return res.status(200).send({
         message: 'User updated successfully!',
         data: updated_user,
@@ -58,6 +63,10 @@ module.exports = {
 
     try {
       var removed_user = await service.delete(_id);
+
+      if (!removed_user)
+        return next( new ErrorHandler(404, `User '${_id}' not found`, { print: false }));
+
       return res.status(200).send({
         message: 'User removed successfully',
         data: removed_user,
