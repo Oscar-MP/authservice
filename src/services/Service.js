@@ -84,8 +84,7 @@ class Service {
         throw new ErrorHandler(500);
       }
     } catch ( e ) {
-      Logger.error('Could not save data into a collection', e);
-      throw new ErrorHandler(500, 'Could not save data into the database', e);
+      throw ErrorHandler.handleMongoError(e, 'Could not save data into the database');
     }
 
     return false;
@@ -94,12 +93,10 @@ class Service {
   async update ( _id, data ) {
     try {
       var item = await this.schema.findByIdAndUpdate(_id, data, { 'new': true})
-
       return item;
 
     } catch (e) {
-      Logger.error('Could not update the item!', e);
-      throw new ErrorHandler(500, 'Could not update', e);
+      throw ErrorHandler.handleMongoError(e, 'Could not update the item');
     }
   }
 
@@ -112,8 +109,7 @@ class Service {
       return item;
 
     } catch (e) {
-      Logger.error('Could not remove the item!', e);
-      throw e;
+      throw ErrorHandler.handleMongoError(e, 'Could not remove the item');
     }
   }
 

@@ -15,8 +15,7 @@ module.exports = {
         data: registrationData
       });
     } catch ( err ) {
-      Logger.error('Could not perform the sign up operation', err);
-      next(err);
+      next(ErrorHandler.stack(err, 'Could not sign up'));
     }
   },
   signin: async (req, res, next) => {
@@ -27,7 +26,7 @@ module.exports = {
       const session = await service.SignIn(username, password);
 
       if (!session) {
-        throw new ErrorHandler(401, 'Could not login!');
+        throw new ErrorHandler(401, `Could not login. Incorrect username or password!`, { errorName: 'Unauthorized' });
       }
 
       return res.status(200).send({
@@ -37,8 +36,7 @@ module.exports = {
     } catch ( err ) {
       // Here an error have to be analized and if there is an error because of the client we will return error
       // if the error is because of the server then we will log it and avoid prompting any detail.
-      Logger.error('Something went wrong during the login.', err);
-      next(err);
+      next(ErrorHandler.stack(err, 'Could not sign in'));
     }
   },
   signout: async (req, res, next) => {

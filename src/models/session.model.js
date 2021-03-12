@@ -32,7 +32,7 @@ const schema = new Schema({
     default: 'ES'
   },
   history: [String],
-  expiration_date: Date
+  expiration_date: Date // Tiempo de vida de la sesion
 });
 
 schema.static.get_active_session = ( userid ) => {

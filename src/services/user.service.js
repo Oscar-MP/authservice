@@ -29,10 +29,9 @@ class UserService extends Service {
     try {
       var response = await this.save(data);
       if (response)
-        console.log('USER: ', response)
         return utils.removeFromObject(response, private_params, true);
     } catch (e) {
-      throw new ErrorHandler(500, 'Error creating a new user', e);
+      throw ErrorHandler.stack(e, 'Could not create a new user');
     }
 
     return false;
@@ -60,8 +59,7 @@ class UserService extends Service {
     try {
       var user = this.get_doc(await this.get(_id));
     } catch (e) {
-      Logger.error('Could not fetch the user with the ID: ' + _id, e);
-      throw e;
+      throw ErrorHandler.stack(e, 'Could not fetch the user with the ID: ' + _id);
     }
 
     if (utils.isEmpty(user)) {
@@ -85,8 +83,7 @@ class UserService extends Service {
       }
 
     } catch (err) {
-      Logger.error('Could not get the user with the identificator: ' + identificator);
-      throw err;
+      throw ErrorHandler.stack(err, 'Could not get the user with the identificator: ' + identificator);
     }
 
     return false;

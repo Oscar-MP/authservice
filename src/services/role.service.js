@@ -22,8 +22,7 @@ class RoleService extends Service {
       return roles;
 
     } catch (e) {
-      Logger.error('Could not list the roles!', e);
-      throw e;
+      throw ErrorHandler.stack(e, 'Could not list the roles');
     }
   }
 
@@ -43,7 +42,7 @@ class RoleService extends Service {
       throw new ErrorHandler(500, 'Could not create the role');
 
     } catch (e) {
-      throw e;
+      throw ErrorHandler.stack(e, 'Could not create the role');
     }
 
   }

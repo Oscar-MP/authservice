@@ -31,7 +31,7 @@ class Session extends Service {
       // Once there is no active session we start the new one
       this.save(this.get_session_class_data())
     } catch (e) {
-      throw e;
+      throw ErrorHandler.stack(e, 'Could not create session');
     }
   }
 
@@ -39,7 +39,7 @@ class Session extends Service {
     try {
       return await this.getBy('userid', this.userid);
     } catch (e) {
-      throw e
+      throw ErrorHandler.stack(e, 'Could not list the sessions related with the user: ' + this.userid);
     }
   }
 
@@ -49,7 +49,7 @@ class Session extends Service {
         var service = new Service(model);
         return await service.getBy('active', 'true');
       } catch ( e ) {
-        throw e;
+        throw ErrorHandler.stack(e, 'Could not list the active sessions');
       }
   }
 

@@ -27,13 +27,14 @@ userSchema.pre('save', async function (next) {
           this.password = await hash(this.password);
         } catch (e) {
           throw e;
-          Logger.error("Could not hash the password!", e);
-          next(e);
         }
       } else {
         return next();
       }
-    } catch (e) {console.log('ERR: ', e)}
+    } catch (e) {
+      Logger.error('Problem saving the user!', e);
+      next(e);
+    }
 });
 
 userSchema.methods.verifyPassword = async function ( input_password ) {

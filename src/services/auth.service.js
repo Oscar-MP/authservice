@@ -16,12 +16,12 @@ class AuthService {
     try {
       // Checking the username:
       if (!utils.isEmpty(await UserService.getByUsername(data.username)))
-        throw new ErrorHandler(400, 'The username already exists');
+        throw new ErrorHandler(400, 'The username already exists', { errorName: 'BadRequest'});
       // Checking the email:
       if (!utils.isEmpty(await UserService.getByEmail(data.email)))
-        throw new ErrorHandler(400, 'The email already exists');
+        throw new ErrorHandler(400, 'The email already exists', { errorName: 'BadRequest'});
     } catch (err) {
-      throw err;
+      throw ErrorHandler.stack(err, 'Error in signup service was cought');
     }
 
     // Now we proceed with the signup
@@ -51,13 +51,12 @@ class AuthService {
     }
 
     // If the user is not activated we won't proceed with the session creation
-    if (!user.activated) throw new ErrorHandler(401, 'You must first activate your account before being able to login!');
+    if (!user.activated) throw new ErrorHandler(401, 'You must first activate your account before being able to login!',  { errorName: 'Unauthorized' });
 
     // The passwords are the same so we start a new session
     try {
       var session = new Session({ userid: user._id })
     } catch (e) {
-      Logger.error('Could not create a session', e);
       throw new ErrorHanler(500, 'Could not create the session', e);
     }
 
