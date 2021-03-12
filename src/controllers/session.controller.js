@@ -10,8 +10,7 @@ module.exports.list_active_sessions = async (req, res, next) => {
   try {
     var sessions = await session_service.get_active_session();
   } catch (e) {
-    Logger.error('Could not list sessions', e);
-    next(e);
+    next(ErrorHandler.stack(e, 'Could not list sessions'));
   }
 
   let message = !sessions ? 'No active sessions found' : 'The sessions have been listed';

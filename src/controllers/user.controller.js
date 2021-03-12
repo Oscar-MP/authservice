@@ -14,8 +14,7 @@ module.exports = {
         data: users
       });
     } catch (e) {
-      Logger.error('Could not list users', e);
-      next(e);
+      next(ErrorHandler.stack(e, 'Could not list users'));
     }
   },
   get_user: async (req, res, next) => {
@@ -25,8 +24,7 @@ module.exports = {
     try {
       var user = await service.getById(id);
     } catch (e) {
-      Logger.error(`Error listing the user with id: ${id}`, e)
-      return next(e);
+      return next(ErrorHandler.stack(e, `Error listing the user with id: ${id}`));
     }
 
     if (!user) {
@@ -52,7 +50,7 @@ module.exports = {
         updated: true
       })
     } catch (e) {
-      next(e);
+      next(ErrorHandler.stack(e, 'Could not update the user ' + _id));
     }
   },
   remove_user: async (req, res, next) => {
@@ -66,7 +64,7 @@ module.exports = {
         deleted: true
       });
     } catch (e) {
-      next(e);
+      next(ErrorHandler.stack(e, 'Could not remove the user ' + _id));
     }
   },
   get_user_history: async (req, res, next) => {
