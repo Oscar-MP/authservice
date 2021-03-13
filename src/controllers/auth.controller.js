@@ -26,7 +26,7 @@ module.exports = {
       const session = await service.SignIn(username, password);
 
       if (!session) {
-        throw new ErrorHandler(401, `Could not login. Incorrect username or password!`, { errorName: 'Unauthorized', print: false });
+        throw new ErrorHandler(401, `Could not login. Incorrect username or password!`, { print: false });
       }
 
       return res.status(200).send({
@@ -39,7 +39,7 @@ module.exports = {
       next(ErrorHandler.stack(err, 'Could not sign in'));
     }
   },
-  signout: async (req, res, next) => {
+  logout: async (req, res, next) => {
 
   }
 };
