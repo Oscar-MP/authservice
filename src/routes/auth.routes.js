@@ -4,7 +4,16 @@ const validator       = require('../common/validators/user.validator.js');
 
 var router = express.Router();
 
-router.post('/signup', validator.validate_http_user_data, controller.signup);
-router.post('/signin', validator.validate_signin_data, controller.signin);
+router.post('/signup',
+  validator.validate_http_user_data,
+  controller.signup
+);
+router.post('/signin',
+  validator.validate_signin_data,
+  controller.signin
+);
+router.get('/logout',
+  controller.logout
+);
 
 module.exports = router;
