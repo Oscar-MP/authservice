@@ -6,7 +6,7 @@ class ErrorHandler extends Error {
   constructor (status, message, params) {
     super();
     this.status     = status      || 500;
-    this.name       = 'Unknown error';
+    this.name       = ErrorHandler.getErrorsName(this.status);
     this.message    = message     || 'Unexpected error';
     this.stack      = [];
     this.print      = true;
@@ -19,7 +19,12 @@ class ErrorHandler extends Error {
         params.message  ? this.stack.push(params.message) : null;
       }
 
-      this.name = params.errorName ? params.errorName : this.name;
+      // Temp fix for same vars with diff name
+      if (!params.name) {
+        this.name = params.errorName ? params.errorName : ErrorHandler.getErrorsName(this.status);
+      } else {
+        this.name = params.name;
+      }
 
       if (!status) {
         let err_nature = ErrorHandler.checkErrorNature(params);
@@ -36,9 +41,11 @@ class ErrorHandler extends Error {
 
   send ( res ) {
     // This method will terminate the HTTP connection by responding with the error
-    res.status(this.status).json({
+    console.log('hey, sup: ', this)
+    res.status(this.status).send({
       message: this.status !== 500 ? this.message : 'Internal Server Error!',
-      code: this.status
+      code: this.status,
+      error: this.name
     });
   }
 
@@ -80,22 +87,27 @@ class ErrorHandler extends Error {
 
 
   static isAClientError( error ) {
-    // THIS METHOD SHOULD BE CHANGED TO WORK WELL IN EVERY CASE
-    const malformed_posible_params = [ '_id' ];
-
-    // Checks if the error comes from the malformed _id
-    if (error.path == '_id') return true;
+    // This method will be removed in next version
+    return ErrorHandler.checkErrorNature() === 'client';
 
 
   }
+
+  static getErrorsName ( statusCode ) {
+    return HTTP_ERRORS[statusCode] ? HTTP_ERRORS[statusCode] : 'Unknown error';
+  }
 }
 
-const HTTP_STATUS_CODES = {
-  OK: 200,
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500
+const HTTP_ERRORS = {
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  402: 'Payment Required',
+  403: 'Forbidden',
+  404: 'Not Found',
+  405: 'Method Not Allowed',
+  408: 'Request Timeout',
+  500: 'Internal Server Error',
+  501: 'Not Implemented',
+  503: 'Service Unavaliable'
 }
-
 module.exports =  { ErrorHandler };
