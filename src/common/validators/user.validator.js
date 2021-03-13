@@ -12,9 +12,8 @@ module.exports = {
         (utils.isEmpty(params.email) || !utils.validator.isEmail(params.email)) ||
         utils.isEmpty(params.password)
       ) {
-        return res.status(400).send({
-          message: 'Missing user params'
-        });
+
+        return next(new ErrorHandler(400, 'Some params are missing!', { print: false}))
       }
 
       next();
@@ -25,10 +24,7 @@ module.exports = {
 
     for ( let param of required_params ) {
       if (!params[param]) {
-        return res.status(400).send({
-          message: 'Unable to sign in, missing some params',
-          param: param
-        });
+        return next(new ErrorHandler(400, `Could not sign in, missing '${param}' param`, { print: false }));
       }
     }
 
