@@ -3,6 +3,7 @@
 const mongoose  = require('mongoose');
 const { hash, compareHash }  = require('../common/lib/crypto.js');
 const { Logger } = require('../common/helpers/logger.js');
+const { Utils } = require('../common/lib/index.js')
 const Schema    = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -41,4 +42,31 @@ userSchema.methods.verifyPassword = async function ( input_password ) {
   return await compareHash(input_password, this.password);
 }
 
-module.exports = mongoose.model('User', userSchema);
+/**
+  * USER ACTIVATION SCHEMA
+  */
+
+const activationSchema = new Schema({
+  userid: {
+    type: Schema.ObjectId,
+    required: true,
+    ref: 'User'
+  },
+  randomSeed: {
+    type: String,
+    required: true,
+    default: function () {
+      return Utils.getRandomStr(8);
+    }
+  },
+  activated: {
+    type: Boolean,
+    default: false
+  }
+}, { timestamps: true });
+
+
+module.exports = {
+  User: mongoose.model('User', userSchema),
+  Activator: mongoose.model('Activator', activationSchema)
+};
