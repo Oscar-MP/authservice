@@ -1,6 +1,5 @@
 const service           = require('../services/user.service.js');
-const { ErrorHandler }  = require('../common/helpers/error.js');
-const { Logger }        = require('../common/helpers/logger.js');
+const { ErrorHandler, Response } = require('../common/helpers/index.js')
 
 module.exports = {
   get_users: async (req, res, next) => {
@@ -9,10 +8,8 @@ module.exports = {
     try {
       var users = await service.get_users();
 
-      return res.status(200).send({
-        message: 'The users have been successfully retrieved',
-        data: users
-      });
+      return Response.send(res, 'The users have been successfully retrieved', users);
+
     } catch (e) {
       next(ErrorHandler.stack(e, 'Could not list users'));
     }
@@ -30,10 +27,8 @@ module.exports = {
     if (!user) {
       next(new ErrorHandler(404, `User '${id}' not found.`));
     } else {
-      return res.status(200).send({
-        message: 'User has successfully listed',
-        data: user
-      })
+
+      return Response.send(res, 'User has successfully listed', user);
     }
 
     next(undefined);
