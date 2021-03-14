@@ -16,4 +16,7 @@ router.get('/logout',
   controller.logout
 );
 
+router.get('/activate/:randomSeed/:userid/:activation_id',
+  controller.activate_account
+);
 module.exports = router;
