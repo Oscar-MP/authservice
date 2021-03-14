@@ -41,7 +41,6 @@ class ErrorHandler extends Error {
 
   send ( res ) {
     // This method will terminate the HTTP connection by responding with the error
-    console.log('hey, sup: ', this)
     res.status(this.status).send({
       message: this.status !== 500 ? this.message : 'Internal Server Error!',
       code: this.status,
