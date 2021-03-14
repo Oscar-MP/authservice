@@ -1,7 +1,7 @@
 'use strict'
 
 var Service   = require('./Service.js');
-var User      = require('../models/user.model.js');
+var { User, Activator } = require('../models/user.model.js');
 var mongoose  = require('mongoose');
 var utils = require('../common/utils.js');
 
@@ -99,9 +99,61 @@ class UserService extends Service {
     return this.schema.find({ username: user }).exec();
   }
 
-  static async exists ( user ) {
+  async prepareActivationRecord ( userid ) {
+    // Generates an activation record in the DB in order to prepare a link for the user activation process.
+
+    var ActivatorService = new Service(Activator);
+
+    try {
+      var activationRecord = await ActivatorService.save({ userid: userid });
+
+      if (!activationRecord) {
+        throw new ErrorHandler(500, 'Error creating the activation process. Empty response.');
+      }
+
+      return activationRecord;
+
+    } catch ( e ) {
+      throw ErrorHandler.stack(e, 'Could not proceed with the activation proccess');
+    }
+  }
+
+  async getActivationLink ( userid, options ) {
+    // This function will return the link for the activation
+
+    // First we will search if we already have the activation record
+    var ActivatorService = new Service(Activator),
+        record;
+
+    if ( !(record = await ActivatorService.getBy('userid', userid)[0] )) {
+      // If the record isn't already create we will create it.
+      try {
+        record = await this.prepareActivationRecord(userid);
+      } catch ( e ) {
+        throw e;
+      }
+    }
+
+    // Now we craft the link
+    return `http://localhost:7850/activate/${record.randomSeed}/${record.userid}/${record._id}`;
 
   }
+
+  async activate_user (userId) {
+    // Returns a bool
+    try {
+      var updated_user = await this.update(userId, { active: true });
+      
+      if (!updated_user) {
+        throw new ErrorHandler(404, 'User not found!', { print: false });
+      }
+
+      return true;
+    } catch (e) { throw e; }
+
+    return false;
+  }
+
 }
 
 module.exports = new UserService();
