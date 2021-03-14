@@ -46,8 +46,10 @@ module.exports = {
   trimSpaces: ( string ) => {
     // Removes the spaces of a string
     return string.replace(/\s+/g, '');
-  }
-
+  },
+  getRandomStr: ( len ) => {
+    return Math.random().toString(20).substr(2, len);
+  },
   /**
     * From here we have clasified the methods
     */
