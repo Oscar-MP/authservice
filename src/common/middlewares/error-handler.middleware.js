@@ -1,7 +1,5 @@
 'use strict'
-var { ErrorHandler } = require('../helpers/error.js');
-var { Logger } = require('../helpers/logger.js');
-
+const { ErrorHandler, Logger } = require('../helpers');
 
 var handleError = (err, req, res, next) => {
   // This is the centralized error handler for the API

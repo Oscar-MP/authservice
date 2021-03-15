@@ -1,8 +1,7 @@
 'use strict'
 
 const service           = require('../services/role.service.js');
-const { ErrorHandler }  = require('../common/helpers/error.js');
-const { Logger }        = require('../common/helpers/logger.js');
+const { ErrorHandler, Logger }  = require('../common/helpers');
 
 var list_roles = async (req, res, next) => {
   // Lists all the roles

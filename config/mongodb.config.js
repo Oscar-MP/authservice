@@ -7,8 +7,8 @@
  */
 
 const   mongoose  = require('mongoose');
-const   config    = require('./environment.js').getConfig();
-const { Logger }  = require('../src/common/helpers/logger.js');
+const   config    = require('./config.js').getConfig();
+const { Logger }  = require('../src/common/helpers');
 
 class MongoConnection {
 

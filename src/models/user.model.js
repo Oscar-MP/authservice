@@ -1,9 +1,8 @@
 'use strict'
 
 const mongoose  = require('mongoose');
-const { hash, compareHash }  = require('../common/lib/crypto.js');
+const { Crypto, Utils }  = require('../common/lib');
 const { Logger } = require('../common/helpers/logger.js');
-const { Utils } = require('../common/lib/index.js')
 const Schema    = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -25,7 +24,7 @@ userSchema.pre('save', async function (next) {
     try {
       if ( this.isModified('password') || this.isNew) {
         try {
-          this.password = await hash(this.password);
+          this.password = await Crypto.hash(this.password);
         } catch (e) {
           throw e;
         }
@@ -39,7 +38,7 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.methods.verifyPassword = async function ( input_password ) {
-  return await compareHash(input_password, this.password);
+  return await Crypto.compareHash(input_password, this.password);
 }
 
 /**

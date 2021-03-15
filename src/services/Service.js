@@ -1,8 +1,7 @@
 'use strict'
 
-var mongoose           = require('mongoose');
-const { Logger }       = require('../common/helpers/logger.js');
-const { ErrorHandler } = require('../common/helpers/error.js');
+var mongoose = require('mongoose');
+const { Logger, ErrorHandler }       = require('../common/helpers');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 class Service {

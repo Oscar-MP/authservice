@@ -1,6 +1,6 @@
 var express           = require('express');
 const controller      = require('../controllers/user.controller.js');
-const { PermissionValidator, ParamValidator } = require('../common/validators/index.js');
+const { PermissionValidator, ParamValidator } = require('../common/validators');
 
 
 var router = express.Router();

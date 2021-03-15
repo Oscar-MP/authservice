@@ -1,5 +1,5 @@
 const service = require('../services/auth.service.js');
-const { ErrorHandler, Logger, Response } = require('../common/helpers/index.js');
+const { ErrorHandler, Logger, Response } = require('../common/helpers');
 
 module.exports = {
   signup: async (req, res, next) => {

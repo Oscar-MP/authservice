@@ -1,12 +1,11 @@
 'use strict'
 
 var Service   = require('./Service.js');
-var { User, Activator } = require('../models/user.model.js');
 var mongoose  = require('mongoose');
-var utils = require('../common/utils.js');
 
-const { Logger } = require('../common/helpers/logger.js');
-const { ErrorHandler } = require('../common/helpers/error.js');
+const { User, Activator } = require('../models/user.model.js');
+const { Utils } = require('../common/lib');
+const { Logger, ErrorHandler } = require('../common/helpers');
 
 
 const private_params = ['password', '__v', 'role'];
@@ -29,7 +28,7 @@ class UserService extends Service {
     try {
       var response = await this.save(data);
       if (response)
-        return utils.removeFromObject(response, private_params, true);
+        return Utils.removeFromObject(response, private_params, true);
     } catch (e) {
       throw ErrorHandler.stack(e, 'Could not create a new user');
     }
@@ -47,7 +46,7 @@ class UserService extends Service {
 
     // We should remove some params from the user data
     users = users.map((item) => {
-      return utils.removeFromObject(item, private_params); // The fucking ._doc should be fixed
+      return Utils.removeFromObject(item, private_params); // The fucking ._doc should be fixed
     });
 
     return users;
@@ -62,11 +61,11 @@ class UserService extends Service {
       throw ErrorHandler.stack(e, 'Could not fetch the user with the ID: ' + _id);
     }
 
-    if (utils.isEmpty(user)) {
+    if (Utils.isEmpty(user)) {
       throw new ErrorHandler(404, `User with ID: ${_id} not found in the server!`);
     }
 
-    return get_full_info ? user : utils.removeFromObject(user, private_params);
+    return get_full_info ? user : Utils.removeFromObject(user, private_params);
   }
 
   async get_user ( identificator ) {
@@ -75,9 +74,9 @@ class UserService extends Service {
     var res;
 
     try {
-      if ( ObjectId.isValid(identificator) && !utils.isEmpty((res = await this.getById(identificator))) ) return res[0];
-      else if ( !utils.isEmpty((res = await this.getBy('email', identificator))) ) return res[0];
-      else if ( !utils.isEmpty((res = await this.getBy('username', identificator)))) return res[0];
+      if ( ObjectId.isValid(identificator) && !Utils.isEmpty((res = await this.getById(identificator))) ) return res[0];
+      else if ( !Utils.isEmpty((res = await this.getBy('email', identificator))) ) return res[0];
+      else if ( !Utils.isEmpty((res = await this.getBy('username', identificator)))) return res[0];
       else {
         throw new ErrorHandler(404, `User '${identificator}' not found in the server!`);
       }
@@ -143,7 +142,7 @@ class UserService extends Service {
     // Returns a bool
     try {
       var updated_user = await this.update(userId, { active: true });
-      
+
       if (!updated_user) {
         throw new ErrorHandler(404, 'User not found!', { print: false });
       }

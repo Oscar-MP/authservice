@@ -2,9 +2,8 @@
 const UserService = require('./user.service.js');
 const Session = require('./session.service.js');
 const Service   = require('./Service.js');
-const { Utils } = require('../common/lib/index.js');
-const { ErrorHandler } = require('../common/helpers/error.js');
-const { Logger } = require('../common/helpers/logger.js');
+const { Utils } = require('../common/lib');
+const { ErrorHandler, Logger } = require('../common/helpers');
 const { Activator } = require('../models/user.model.js');
 
 class AuthService {

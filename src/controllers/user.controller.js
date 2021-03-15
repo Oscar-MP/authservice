@@ -1,5 +1,5 @@
 const service           = require('../services/user.service.js');
-const { ErrorHandler, Response } = require('../common/helpers/index.js')
+const { ErrorHandler, Response } = require('../common/helpers')
 
 module.exports = {
   get_users: async (req, res, next) => {

@@ -1,8 +1,6 @@
 'use strict'
 
-const utils = require('../common/utils.js');
-const { ErrorHandler } = require('../common/helpers/error.js');
-const { Logger } = require('../common/helpers/logger.js');
+const { ErrorHandler, Logger } = require('../common/helpers');
 const Role = require('../models/role.model.js');
 const Service = require('./Service.js')
 
