@@ -14,16 +14,15 @@ const { Logger } = require('./src/common/helpers/logger.js');
 Logger.info('Iniciando aplicación...');
 
 var mongo       = require('./config/mongodb.config.js');
-const config = require('./config/environment.js').getConfig(env); //dev
-
+const config = require('./config/config.js').getConfig(env);
 
 const { server } = require('./src/server.js');
 
-server.listen( config.PORT )
+server.listen( config.port )
   .on('listening', () => {
     // Everything went well, the server is up and running
     console.log(chalk.bgBlue.green(chalk.bold(`\n[*] Servidor HTTP funcionando sin problemas:\n`) +
-                                    `- PUERTO: ${config.PORT}\n` +
+                                    `- PUERTO: ${config.port}\n` +
                                     `- MODO: ${env}\n` +
                                     `- DB: ${mongo.isConnected()}\n`))
   })
