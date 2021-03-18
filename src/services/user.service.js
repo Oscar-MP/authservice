@@ -78,7 +78,7 @@ class UserService extends Service {
       else if ( !Utils.isEmpty((res = await this.getBy('email', identificator))) ) return res[0];
       else if ( !Utils.isEmpty((res = await this.getBy('username', identificator)))) return res[0];
       else {
-        throw new ErrorHandler(404, `User '${identificator}' not found in the server!`);
+        throw new ErrorHandler(404, `User not found`);
       }
 
     } catch (err) {
