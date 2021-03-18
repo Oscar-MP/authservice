@@ -1,6 +1,6 @@
 'use strict'
 
-const { Logger } = require('../helpers/logger.js');
+const { Logger } = require('../helpers');
 const chalk = require('chalk');
 const Log = console.log;
 
