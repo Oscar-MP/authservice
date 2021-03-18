@@ -1,22 +1,34 @@
 'use strict'
 
 const ValidationError = require('mongoose').Error.ValidationError;
+const { Utils } = require('../lib');
 
 class ErrorHandler extends Error {
   constructor (status, message, params) {
     super();
     this.status     = status      || 500;
     this.name       = ErrorHandler.getErrorsName(this.status);
-    this.message    = message     || 'Unexpected error';
-    this.stack      = [];
+    this.message    = message;
+    this.trace      = [];
     this.print      = true;
 
     if ( params ) {
 
-      if ( params instanceof ErrorHandler ) {
-        this.stack.push(params.stack);
+      if (!message && !Utils.isEmpty(params.message)) {
+        this.message = params.message;
       } else {
-        params.message  ? this.stack.push(params.message) : null;
+        this.message = 'Unexpected error!';
+      }
+
+      if ( params instanceof ErrorHandler ) {
+        this.trace = params.trace;
+
+        if ( this.message != params.message ) {
+          this.trace.push(params.message);
+        }
+
+      } else {
+        params.message  ? this.trace.push(params.message) : null;
       }
 
       // Temp fix for same vars with diff name
@@ -70,7 +82,8 @@ class ErrorHandler extends Error {
   static stack ( error, message ) {
 
     if (error instanceof ErrorHandler) {
-      error.stack.push(message);
+      error.trace.push(error.message);
+      error.message = message
       return error;
     }
 
