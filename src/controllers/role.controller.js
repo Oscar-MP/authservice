@@ -1,7 +1,7 @@
 'use strict'
 
 const service           = require('../services/role.service.js');
-const { ErrorHandler, Logger }  = require('../common/helpers');
+const { ErrorHandler, Logger, Response }  = require('../common/helpers');
 
 var list_roles = async (req, res, next) => {
   // Lists all the roles
@@ -21,6 +21,22 @@ var list_roles = async (req, res, next) => {
 
 var get_role = async (req, res, next) => {
   // Get a specific role
+
+  const id = req.params.id;
+
+  try {
+    var role = await service.get(id);
+
+    if (!role) {
+      return next(new ErrorHandler(404, `Role '${id}' not found!`));
+    }
+  } catch ( err ) {
+    return next(ErrorHandler.stack(err, `Could not get the role with id: ${id}`));
+  }
+
+
+  Response.send(res, `Information about role '${id}' has been successfully fetched.`, role)
+
 }
 
 var create_role = async (req, res, next) => {
@@ -42,11 +58,37 @@ var create_role = async (req, res, next) => {
 }
 
 var update_role = async (req, res, next) => {
+  const id = req.params.id;
 
+  try {
+    var updated_role = await service.update(id, req.body);
+
+    if (!updated_role) {
+      return next(new ErrorHandler(404, `Role '${id}' not found!`, null, { print: false }));
+    }
+
+    Response.send(res, 'The role has been updated!', updated_role);
+
+  } catch ( err ) {
+    return next(ErrorHandler.stack(err, 'Could not update the role with the id: ' + id));
+  }
 }
 
 var remove_role = async (req, res, next) => {
+  const id = req.params.id;
 
+  try {
+    var removed_role = await service.delete(id);
+
+    if (!removed_role) {
+      return next(new ErrorHandler(404, `Role '${id}' not found in the server!`));
+    }
+
+    Response.send(res, `The role '${id}' has been removed!`, removed_role);
+
+  } catch ( err ) {
+    return next(ErrorHandler.stack(err, `Could not erease the role: ${id}`));
+  }
 }
 
 module.exports = {
