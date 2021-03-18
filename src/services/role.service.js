@@ -44,14 +44,6 @@ class RoleService extends Service {
     }
 
   }
-
-  async update_role ( _id, role_data) {
-
-  }
-
-  async remove_role ( _id ) {
-    // We cannot delete a role if there are users asigned to that role.
-  }
 }
 
 module.exports = new RoleService();
