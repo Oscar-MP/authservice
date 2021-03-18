@@ -1,6 +1,6 @@
 'use strict'
 
-var utils = require('../utils.js');
+const { Utils } = require('../lib');
 
 module.exports = {
   validate_http_user_data: (req, res, next) => {
