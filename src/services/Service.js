@@ -103,12 +103,12 @@ class Service {
     try {
       var item = await this.schema.findByIdAndDelete(_id);
 
-      if (!item) throw new ErrorHandler(404, 'Item not found');
+      if (!item) throw new ErrorHandler(404, 'Item not found', null, { print: false });
 
       return item;
 
     } catch (e) {
-      throw ErrorHandler.handleMongoError(e, 'Could not remove the item');
+      throw ErrorHandler.stack(e, 'Could not remove the item');
     }
   }
 
