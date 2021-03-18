@@ -2,7 +2,7 @@
 
 const chalk = require('chalk');
 const { ErrorHandler } = require('./error.js');
-const utils = require('../utils.js')
+const { Utils } = require('../lib');
 const Log = console.log;
 
 
@@ -62,7 +62,7 @@ class Logger {
 
     level = level || 'error';
 
-    if (!utils.isEmpty(error)) {
+    if (!Utils.isEmpty(error)) {
       let header   = chalk.bold.red(' -  ');
 
       const colors = {
@@ -72,14 +72,14 @@ class Logger {
       };
 
 
-      if ( error instanceof ErrorHandler && error.stack.length > 0) {
+      if ( error instanceof ErrorHandler && error.trace.length > 0) {
         // We will print the stack
-        error.stack.forEach( (e) => {
+        error.trace.forEach( (e) => {
           Log(chalk.italic[colors[level]](`${header}${e}`));
         });
       }
 
-      let error_message = utils.isEmpty(error.message) ? error : error.message;
+      let error_message = Utils.isEmpty(error.message) ? error : error.message;
       Log(chalk.italic[colors[level]](`${header}${error_message}`));
     }
   }
