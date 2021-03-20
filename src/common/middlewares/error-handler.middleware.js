@@ -9,16 +9,16 @@ var handleError = (err, req, res, next) => {
     return next(err)
   }
 
-  if (err instanceof ErrorHandler ) {
-    return err.send(res);
-  } else {
+  if (!err instanceof ErrorHandler ) {
+    let status  = err.status && err.status > 500 ? err.status : 500;
+    let message = status < 500 && err.message ? err.message : 'Internal Server Error.';
 
-  // Esto se debe modificar!!!
-  let message = err.status >= 500 || !err.status ? 'Internal Server Error!' : (err.message || err._message) || 'Unexpected error happened!';
-  return res.status( err.status ? err.status : 500).send({
-    message: message
-  });
-  }
+    err = new ErrorHandler(status, message, err);
+  } 
+
+  return err.send(res)
+
+
 }
 
 var logError = (err, req, res, next) => {
