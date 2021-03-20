@@ -2,6 +2,8 @@
 
 const ValidationError = require('mongoose').Error.ValidationError;
 const { Utils } = require('../lib');
+const { config } = require('../../../config/config.js').getConfig();
+const { Logger } = require('.');
 
 class ErrorHandler extends Error {
   constructor (status, message, params) {
@@ -58,6 +60,14 @@ class ErrorHandler extends Error {
       code: this.status,
       error: this.name
     });
+  }
+
+  printError() {
+    // This function will print the error into the console depending on the verbose level
+
+    if (!config.log_errors) return;
+    Logger.info('hel')
+
   }
 
   static checkErrorNature ( error ) {
