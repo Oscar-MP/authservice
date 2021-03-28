@@ -1,38 +1,89 @@
 'use strict'
 
-var model = require('../models/session.model.js');
-var Service = require('./Service.js');
+const model     = require('../models/session.model.js');
+const Service   = require('./Service.js');
+const Token     = require('../models/token.model.js');
+const { Utils } = require('../common/lib');
+const { ErrorHandler } = require('../common/helpers');
 
-class Session extends Service {
+class SessionService extends Service {
 
-  constructor (data, store_session = true ) {
+  constructor () {
     super(model);
+  }
 
-    this.userid = data.userid;
-    this.session_start = new Date();
-    this.token = this.generate_token();
-    this.client_info = {};
+  async generate_session ( { userid } ) {
+    // Creates a new session for a user. Returns a session cookie and a token
+    try {
+      // Firstly we should create the token
+      let token_secret = Utils.getRandomStr(8);
+      let token = new Token(userid, token_secret);
+      // Token options
 
-    if (store_session) {
-      //this.create_session();
+      // Get the token string
+      let raw_token       = token.craft();
+      var session = await this.isAlreadyInSession(userid);
+
+      if ( !session ) {
+        session  = await this.save({
+          userid: userid,
+          token: raw_token,
+          token_secret: token_secret
+        });
+      }
+
+      return { raw_token, session_cookie: {
+          cookie_id: session._id,
+          lang: session.lang
+      }};
+
+    } catch ( err ) {
+
+      throw ErrorHandler.stack(err, 'Could not generate the session',);
     }
-
-    //console.log(this.get_all_my_sessions());
 
   }
 
-  // Needed crud methods
 
-  create_session () {
-    // Stores the session into the DB
-    try {
-      // First we should look for an active session of this user.
 
-      // Once there is no active session we start the new one
-      this.save(this.get_session_class_data())
-    } catch (e) {
-      throw ErrorHandler.stack(e, 'Could not create session');
+
+  async isAlreadyInSession ( userid ) {
+    // Checks if there is already a session for a user
+    // If there is more than one active session then all sessions are disabled unless the last created session
+    let sessions = await this.schema.find({ userid: userid });
+    let active_sessions = sessions.filter( s => s.active );
+
+    if (active_sessions.length > 0 ) {
+      // The user is already in another session, let's check if
+      // there is more than one session
+      var scope = this;
+      active_sessions.forEach( async   ( e, index ) => {
+        // El último elemento del array lo dejamos intacto ya que es el que se devolverá.
+        if ( index != active_sessions.length - 1 || !scope.isAlive(e) ) {
+          e.active = false;
+
+          try {
+            let updated_e = await scope.schema.findByIdAndUpdate(e._id, e);
+
+          } catch ( err ) {
+            throw ErrorHandler.stack(err, 'Could not update the session ' + e._id);
+          }
+        }
+      });
+
+      if (active_sessions.length > 1) {
+        // wtf
+      }
+
+      return active_sessions[0];
     }
+
+    return false;
+  }
+
+  async isAlive ( session ) {
+    // Checks if the session is still valid in terms of time
+    return Date.now < session.expiration_date;
   }
 
   async get_all_my_sessions() {
@@ -43,7 +94,7 @@ class Session extends Service {
     }
   }
 
-  static async get_active_session () {
+  async get_active_session () {
       // Returns a list of all active sessions
       try {
         var service = new Service(model);
@@ -53,50 +104,11 @@ class Session extends Service {
       }
   }
 
-  generate_token () {
-    return 'thisisanawesometoken';
-  }
-
-  get_public_info () {
-    // Returns the public information about this session
-    return {
-      userid: this.userid,
-      session_start: this.session_start,
-      token: this.token
-    };
-  }
-
-  add_history_route () {
-    // Adds a new visited route during a session.
-
-    // ! THIS WILL BE ALSO IN THE MODEL
-  }
-
-  set_client_information ( info ) {
-      // ! THIS METHOD WILL BE IN THE MODEL
-  }
-
-  get_session_class_data () {
-    // Returns the params of this class
-    let object = {...this};
-
-    delete object.schema;
-    delete object.error;
-
-    return object;
-  }
-
-
   static get_client_ip ( request ) {
     // Get's the IP of the client. We need the request object
     return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   }
 
-  static craft_session ( data ) {
-    // This function will create a session object based on the given data.
-
-    return new Session(data, false);
-  }
 }
 
-module.exports = Session;
+module.exports = new SessionService();
