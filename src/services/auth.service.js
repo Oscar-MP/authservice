@@ -1,6 +1,6 @@
 'use strict'
 const UserService = require('./user.service.js');
-const Session = require('./session.service.js');
+const SessionService = require('./session.service.js');
 const Service   = require('./Service.js');
 const { Utils } = require('../common/lib');
 const { ErrorHandler, Logger } = require('../common/helpers');
@@ -56,21 +56,21 @@ class AuthService {
 
     if (!await user.verifyPassword(password)) {
       // The passwords doesn't match
-      throw new ErrorHandler(401, 'Could not login. Wrong username or password!', { print: false});
+      throw new ErrorHandler(401, 'Could not login. Wrong username or password!', { print: true});
     }
 
     // If the user is not activated we won't proceed with the session creation
     if (!user.active)
-      throw new ErrorHandler(403, 'You must first activate your account before being able to login!',  {  print: false });
+      throw new ErrorHandler(403, 'You must first activate your account before being able to login!',  {  print: true });
 
     // The passwords are the same so we start a new session
     try {
-      var session = new Session({ userid: user._id })
+      return  await SessionService.generate_session({ userid: user._id });
     } catch (e) {
-      throw new ErrorHanler(500, 'Could not create the session', e);
+      throw new ErrorHandler(500, 'Could not create the session', e);
     }
 
-    return session.get_public_info();
+    //return { token, session_cookie };
   }
 
   async SignOut () {
