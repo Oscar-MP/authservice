@@ -8,9 +8,9 @@ module.exports = {
       // validate the user. Only checks if there is enough data to move to the next layer
       var params = req.body;
       if (
-        utils.isEmpty(params.username)                                          ||
-        (utils.isEmpty(params.email) || !utils.validator.isEmail(params.email)) ||
-        utils.isEmpty(params.password)
+        Utils.isEmpty(params.username)                                          ||
+        (Utils.isEmpty(params.email) || !Utils.validator.isEmail(params.email)) ||
+        Utils.isEmpty(params.password)
       ) {
 
         return next(new ErrorHandler(400, 'Some params are missing!', { print: false}))
