@@ -9,16 +9,15 @@ var handleError = (err, req, res, next) => {
     return next(err)
   }
 
-  if (!err instanceof ErrorHandler ) {
+  if ( !(err instanceof ErrorHandler) ) {
+    console.log(err)
     let status  = err.status && err.status > 500 ? err.status : 500;
     let message = status < 500 && err.message ? err.message : 'Internal Server Error.';
 
     err = new ErrorHandler(status, message, err);
-  } 
+  }
 
   return err.send(res)
-
-
 }
 
 var logError = (err, req, res, next) => {
