@@ -49,7 +49,7 @@ class ErrorHandler extends Error {
       }
 
       if (params.print === false) this.print = false;
-
+      if (params.nature) this.nature = params.nature;
     }
   }
 
@@ -71,7 +71,9 @@ class ErrorHandler extends Error {
   }
 
   static checkErrorNature ( error ) {
+
     if ( error instanceof ValidationError ) return 'client';
+    if ( error.nature && error.nature === 'client' ) return error.nature;
 
     return 'server';
   }
