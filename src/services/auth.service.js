@@ -43,7 +43,7 @@ class AuthService {
     };
   }
 
-  async SignIn (username, password) {
+  async SignIn (username, password, info) {
     // This method performs the login operation. If succeed, then the session information will be returned
 
     // The param user can be the username or the email
