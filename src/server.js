@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 /**
  *  Autor: Sleider
@@ -11,7 +11,7 @@ var express     = require('express');
 var bodyParser  = require('body-parser');
 var helmet      = require('helmet');
 var { handleError, logError }  = require('./common/middlewares/error-handler.middleware.js');
-var { log_request } = require('./common/middlewares/request-logger.middleware.js')
+var { log_request } = require('./common/middlewares/request-logger.middleware.js');
 const server    = express();
 
 server.use(helmet());
@@ -31,4 +31,4 @@ require('./routes.js').set_routes(server);
 // Error handlers
 server.use(logError, handleError);
 
-module.exports = {server}
+module.exports = {server};
