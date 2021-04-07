@@ -50,15 +50,4 @@ const schema = new Schema({
   }
 });
 
-schema.static.get_active_session = ( userid ) => {
-  // Obtains the active session of a user
-}
-
-
-schema.pre('save', async function (next) {
-    // Let's check if the user does exist
-
-});
-
-
 module.exports = mongoose.model('Session', schema);
