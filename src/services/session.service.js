@@ -5,6 +5,7 @@ const Service   = require('./Service.js');
 const Token     = require('../models/token.model.js');
 const { Utils } = require('../common/lib');
 const { ErrorHandler } = require('../common/helpers');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 class SessionService extends Service {
 
@@ -15,27 +16,34 @@ class SessionService extends Service {
   async generate_session ( { userid } ) {
     // Creates a new session for a user. Returns a session cookie and a token
     try {
-      // Firstly we should create the token
+      // We're firstly closing any existing user session
+      await this.closeUserSession( userid );
+
+      // Then we create the token for the new session
+      let payload = {
+        userid: userid,
+        sessionId: ObjectId()
+      };
       let token_secret = Utils.getRandomStr(8);
-      let token = new Token(userid, token_secret);
+      let token = new Token(token_secret, payload);
       // Token options
 
-      // Get the token string
-      let raw_token       = token.craft();
-      var session = await this.isAlreadyInSession(userid);
+      // Get the token encoded string
+      let raw_token = token.craft();
 
-      if ( !session ) {
-        session  = await this.save({
-          userid: userid,
-          token: raw_token,
-          token_secret: token_secret
-        });
-      }
+      const session = await this.save({
+        userid: userid,
+        token: raw_token,
+        secret: token_secret
+      })
 
-      return { raw_token, session_cookie: {
-          cookie_id: session._id,
+
+      return {
+        token: session.token,
+        session_cookie: {
           lang: session.lang
-      }};
+        }
+      };
 
     } catch ( err ) {
 
@@ -44,12 +52,30 @@ class SessionService extends Service {
 
   }
 
+  async closeUserSession( userId ) {
+    // Finishes the user session. This means that we will disable all existing sessions of
+    // a given user but it's supposed to be just one session active at once.
 
+    try {
+      var session = await this.isAlreadyInSession(userId);
 
+      if (session) {
+        session.active = false;
+
+        let updated = await this.schema.findByIdAndUpdate(session._id, session);
+      }
+    } catch (err) {
+      throw ErrorHandler.stack(err, 'Could not close user session');
+    }
+
+    return;
+  }
 
   async isAlreadyInSession ( userid ) {
     // Checks if there is already a session for a user
-    // If there is more than one active session then all sessions are disabled unless the last created session
+    // If there is more than one active session then all sessions are disabled unless
+    // the last created session. Returns a session if there is any or false.
+
     let sessions = await this.schema.find({ userid: userid });
     let active_sessions = sessions.filter( s => s.active );
 
@@ -97,8 +123,10 @@ class SessionService extends Service {
   async get_active_session () {
       // Returns a list of all active sessions
       try {
-        var service = new Service(model);
-        return await service.getBy('active', 'true');
+        var sessions = await this.getBy('active', 'true');
+        // Removing private params like the token_secret
+        return sessions.map( s => Utils.removeFromObject(this.get_doc(s), ['token_secret'], true));
+
       } catch ( e ) {
         throw ErrorHandler.stack(e, 'Could not list the active sessions');
       }
