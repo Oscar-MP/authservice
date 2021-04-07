@@ -2,11 +2,12 @@
 
 var express           = require('express');
 const controller      = require('../controllers/role.controller.js');
-const { PermissionValidator, ParamValidator }       = require('../common/validators/index.js');
-
+const { PermissionValidator, ParamValidator } = require('../common/validators/index.js');
+const { permissions } = require('../common/middlewares');
 var router = express.Router();
 
 router.get('/roles',
+            permissions.required_permissions(45),
             controller.list_roles
           );
 router.get('/role/:id',
