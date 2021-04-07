@@ -7,7 +7,8 @@
  */
 
 const routes  = require('./routes/index.js');
-const { ErrorHandler } = require('./common/helpers/error.js');
+const { ErrorHandler } = require('./common/helpers');
+const { catch_session, catch_token } = require('./common/middlewares')
 
 module.exports.set_routes = (server) => {
 
@@ -17,7 +18,12 @@ module.exports.set_routes = (server) => {
    });
   });
 
-  server.use('/', routes.auth, routes.users, routes.roles);
+  server.use('/', routes.auth);
+
+  // From here all routes must be performed having a valid token and session
+  server.use(catch_token, catch_session);
+
+  server.use('/', routes.users, routes.roles)
   server.use('/session', routes.sessions);
 
 
