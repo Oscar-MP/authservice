@@ -65,7 +65,11 @@ class AuthService {
 
     // The passwords are the same so we start a new session
     try {
-      return  await SessionService.generate_session({ userid: user._id });
+      return  await SessionService.generate_session({
+          userid: user._id,
+          username: user.username,
+          role: user.role
+      });
     } catch (e) {
       throw new ErrorHandler(500, 'Could not create the session', e);
     }
