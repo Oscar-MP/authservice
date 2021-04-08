@@ -5,7 +5,6 @@ const Service   = require('./Service.js');
 const Token     = require('../models/token.model.js');
 const { Utils } = require('../common/lib');
 const { ErrorHandler } = require('../common/helpers');
-var ObjectId = require('mongoose').Types.ObjectId;
 
 class SessionService extends Service {
 
@@ -13,33 +12,26 @@ class SessionService extends Service {
     super(model);
   }
 
-  async generate_session ( { userid } ) {
+  async generate_session ( { userid, username, role } ) {
     // Creates a new session for a user. Returns a session cookie and a token
     try {
       // We're firstly closing any existing user session
       await this.closeUserSession( userid );
 
       // Then we create the token for the new session
-      let payload = {
-        userid: userid,
-        sessionId: ObjectId()
-      };
-      let token_secret = Utils.getRandomStr(8);
-      let token = new Token(token_secret, payload);
-      // Token options
 
-      // Get the token encoded string
-      let raw_token = token.craft();
+      var token = new Token({ userId: userid, username: username}, true);
+      var encoded_token = token.encode();
 
       const session = await this.save({
+        _id: token.sessionId,
         userid: userid,
-        token: raw_token,
-        secret: token_secret
+        token: encoded_token,
+        secret: token.secret
       })
 
-
       return {
-        token: session.token,
+        token: encoded_token,
         session_cookie: {
           lang: session.lang
         }
