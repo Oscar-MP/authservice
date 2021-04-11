@@ -18,10 +18,7 @@ class Service {
       throw new ErrorHandler(400, 'Not a valid ID');
 
     try {
-      var res = await this.schema.findById( _id );
-
-      return res;
-
+      return this.schema.findById( _id );
     } catch ( e ) {
 
       let error = ErrorHandler.isAClientError(e) ?
