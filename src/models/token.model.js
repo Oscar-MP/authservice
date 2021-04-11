@@ -23,6 +23,7 @@ class Token {
 
     this.userId     = payload.userId;
     this.sessionId  = payload.sessionId || ObjectId();
+    this.alias      = payload.alias || null;
     this.seed       = Utils.getRandomStr(8);
     this.username   = payload.username;
   }
@@ -34,6 +35,7 @@ class Token {
       userId: this.userId,
       sessionId: this.sessionId,
       username: this.username,
+      alias: this.alias,
       seed: this.seed
     };
 
@@ -52,9 +54,10 @@ class Token {
     // Decodes the token payload and returns a token object with it
   }
 
-  static verify ( token_string, secret ) {
+  static verify ( token_string, secret, opts ) {
     // Verifies the token signature and if the token is alive. Returns a bool?
 
+    return jwt.verify(token_string, secret);
   }
 
   static isValid ( token ) {
@@ -64,6 +67,23 @@ class Token {
 
   static isAlive( token ) {
 
+  }
+
+  static getPayload( token ) {
+    // Gets the payload from a encoded token
+    const token_splitted = token.split('.');
+    token = {
+      header: token_splitted[0],
+      payload: token_splitted[1],
+      signature: token_splitted[2]
+    }
+
+    try {
+
+      return JSON.parse(Buffer.from(token.payload, 'base64').toString());
+    } catch (err) {
+      throw ErrorHandler.stack(err, 'Can not get the token payload!')
+    }
   }
 }
 
