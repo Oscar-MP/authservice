@@ -10,7 +10,11 @@ AuthService is an authentication and authorization service which is based on JWT
   * Refresh token system based on the session ( still in development )
 
 ## Installation
+
+  Requeriments:
+
   * You need nodejs and npm installed in order to run this project!
+  * You need mongodb running in the background
 
   Download the project
   ```bash
