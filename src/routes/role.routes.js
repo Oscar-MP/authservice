@@ -11,17 +11,21 @@ router.get('/roles',
             controller.list_roles
           );
 router.get('/role/:id',
+            permissions.required_permissions(45),
             ParamValidator.is_a_valid_id,
             controller.get_role
           );
 router.post('/role/create',
+              permissions.required_permissions(75),
               controller.create_role
            );
 router.post('/role/:id/update',
+              permissions.required_permissions(75),
               ParamValidator.is_a_valid_id,
               controller.update_role
            );
 router.delete('/role/:id/remove',
+                permissions.required_permissions(75),
                 ParamValidator.is_a_valid_id,
                 controller.remove_role
              );
