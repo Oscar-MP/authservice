@@ -26,8 +26,6 @@ AuthService is an authentication and authorization service which is based on JWT
   ```bash
   $ node index.js
   ```
-
-  # Any contribution will be apreciated
-
 ## Still in developement!
 ! THIS IS NOT EVEN A BETA !
+Any contribution will be apreciated
