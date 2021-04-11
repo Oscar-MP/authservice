@@ -23,17 +23,26 @@ module.exports.catch_session = async (req, res, next) => {
   var decoded_token = Token.getPayload(req.token);
 
   try {
-    var incoming_session = await SessionService.get(decoded_token.sessionId);
+    var incoming_session  = SessionService.get(decoded_token.sessionId);
+    var incoming_user     = UserService.get(decoded_token.userId);
+
+    var session = await Promise.all([incoming_session, incoming_user]);
+
+    const user = session[1];
+    session = session[0];
+
+    if ( !(session.userid == user.id && session.userid == decoded_token.userId) ) {
+      // We will log this before verifying the token because this could mean that
+      // the token has been modified by someone
+      Logger.error(`The incoming token has been modified, someone might be trying to impersonate a user!`);
+      return next(new ErrorHandler(401, 'Invalid token!'));
+    }
+
+
   } catch (err) {
     next( ErrorHandler.stack(err, 'Could not get the token user session'));
   }
 
-  if (incoming_session.userid != decoded_token.userId) {
-    // We will log this before verifying the token because this could mean that
-    // the token has been modified by someone
-    Logger.error(`The incoming token has been modified, someone might be trying to impersonate a user!`);
-    return next(new ErrorHandler(401, 'Invalid token!'));
-  }
 
   if ( config.session_ip_address_validation ) {
     // IP VALIDATION
@@ -47,12 +56,17 @@ module.exports.catch_session = async (req, res, next) => {
   }
 
   try {
-    var token = Token.verify(req.token, incoming_session.token_secret);
-    req.session = incoming_session.toJSON();
-    let user = await UserService.getById(incoming_session.userid);
+
+    var token = Token.verify(req.token, session.token_secret);
+    req.session = session.toJSON();
     req.user = user.toJSON();
     next();
   } catch ( err ) {
+
+    if (err.name == 'TokenExpiredError') {
+        return next(new ErrorHandler(400, 'The token has expired! You need to send the refresh token to renew it.'))
+    }
+
     Logger.error('Could not verify the token', err);
     return next(ErrorHandler.stack(err, 'Could not verify the token'));
   }
