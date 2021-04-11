@@ -2,10 +2,13 @@
 
 var express           = require('express');
 const controller      = require('../controllers/session.controller.js');
-const validator       = require('../common/validators/permissions.validator.js');
+const { permissions } = require('../common/middlewares');
 
 var router = express.Router();
 
-router.get('/list/active', validator.check_permission ,controller.list_active_sessions);
+router.get('/list/active',
+            permissions.required_permissions(45),
+            controller.list_active_sessions
+          );
 
 module.exports = router;
