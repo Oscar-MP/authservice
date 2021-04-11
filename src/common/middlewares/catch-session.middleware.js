@@ -51,7 +51,6 @@ module.exports.catch_session = async (req, res, next) => {
     req.session = incoming_session.toJSON();
     let user = await UserService.getById(incoming_session.userid);
     req.user = user.toJSON();
-    console.log(req.user)
     next();
   } catch ( err ) {
     Logger.error('Could not verify the token', err);
