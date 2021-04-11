@@ -26,6 +26,9 @@ const schema = new Schema({
   token_secret: {
     type: String
   },
+  ipAddress: {
+    type: String
+  },
   lang: {
     type: String,
     default: 'ES'
@@ -49,5 +52,15 @@ const schema = new Schema({
     default: Date.now
   }
 });
+
+schema.set('toJSON', {
+  transform: (doc, returnedObject) => {
+    returnedObject.id = returnedObject._id;
+    delete returnedObject._id;
+    delete returnedObject.__v;
+    delete returnedObject.token_secret;
+  }
+});
+
 
 module.exports = mongoose.model('Session', schema);
