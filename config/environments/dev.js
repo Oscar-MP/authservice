@@ -8,5 +8,8 @@ module.exports = {
   port: 7850,
   log_errors: true,
   token_ttl: 60 * 60 * 6, // 6 Hours in seconds
-  session_ttl: 1000 * 60 * 60 * 24 * 7 // 7 Days in miliseconds
+  session_ttl: 1000 * 60 * 60 * 24 * 7, // 7 Days in miliseconds
+  session_ip_address_validation: false,
+  use_tokens: true,
+  use_session_auth: true
 }
