@@ -1,9 +1,33 @@
 # AuthService
 
-Auth Service is a repository that contains an authentication microservice.
+AuthService is an authentication and authorization service which is based on JWT tokens and persistent sessions.
 
-This is not only for authenticating, it is also used to authrize requests, manage user sessions, validate origins, stablish secure communication channels, manageing crypto keys, etc...
+## Features
+  * JWT Usage without having to use a secret for signing
+  * Persistent session storage in mongodb
+  * Role system management
+  * User authentication and authorization
+  * Refresh token system based on the session ( still in development )
+
+## Installation
+  * You need nodejs and npm installed in order to run this project!
+
+  Download the project
+  ```bash
+  $ git clone https://github.com/MrSleider/authservice.git
+  ```
+  Get into the folder and install the project using npm
+
+  ```bash
+  $ npm install
+  ```
+
+  Now start the project
+  ```bash
+  $ node index.js
+  ```
+
+  # Any contribution will be apreciated
 
 ## Still in developement!
-
-
+! THIS IS NOT EVEN A BETA !
