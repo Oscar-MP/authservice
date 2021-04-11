@@ -8,7 +8,7 @@ var list_roles = async (req, res, next) => {
   try {
     var roles = await service.get_roles();
 
-    if (!roles) next(new ErrorHandler(404, 'No roles were found!'));
+    if (!roles) return next(new ErrorHandler(404, 'No roles were found!'));
 
     return res.status(200).send({
       message: 'The roles has been successfully retrieved!',
