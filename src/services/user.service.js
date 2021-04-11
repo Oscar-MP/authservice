@@ -1,9 +1,9 @@
 'use strict'
 
-var Service   = require('./Service.js');
+var Service   = require('./Service');
 var mongoose  = require('mongoose');
-
-const { User, Activator } = require('../models/user.model.js');
+const RoleService = require('./role.service');
+const { User, Activator } = require('../models/user.model');
 const { Utils } = require('../common/lib');
 const { Logger, ErrorHandler } = require('../common/helpers');
 
@@ -14,6 +14,13 @@ class UserService extends Service {
 
   constructor () {
     super(User);
+  }
+
+  async get (_id ) {
+    let user = await super.get(_id);
+    let role = await RoleService.get(user.role);
+    user.role = role;
+    return user;
   }
 
   async create ( data ) {
@@ -56,7 +63,7 @@ class UserService extends Service {
     // Fetchs a user by its ID
 
     try {
-      var user = this.get_doc(await this.get(_id));
+      var user = await this.get(_id);
     } catch (e) {
       throw ErrorHandler.stack(e, 'Could not fetch the user with the ID: ' + _id);
     }
