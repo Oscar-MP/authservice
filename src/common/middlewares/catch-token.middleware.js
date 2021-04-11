@@ -9,14 +9,20 @@
 const { ErrorHandler } = require('../helpers');
 const { Utils } = require('../lib');
 
+const Config = require('../../../config/config');
+
 module.exports.catch_token = async (req, res, next) => {
+
+  if (!Config.getConfig().use_tokens) next();
 
   const authHeader = req.headers['authorization'];
 
-  if ( !Utils.isEmpty(authHeader) && authHeader.split(' ')[0] === 'Bearer' ) {
+  if ( !Utils.isEmpty(authHeader) && authHeader.toLowerCase().startsWith('bearer') ) {
     req.token = authHeader.split(' ')[1];
   } else if ( req.body.token ) {
-    req.token = req.body.token;
+    return res.status(400).send({
+      message: `Token must be send via headers not in the content body`
+    });
   } else {
     return res.status(403).send({
       message: `You don't have permissions to access this route`
