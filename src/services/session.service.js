@@ -12,7 +12,7 @@ class SessionService extends Service {
     super(model);
   }
 
-  async generate_session ( { userid, username, role } ) {
+  async generate_session ( { userid, username, alias, role } ) {
     // Creates a new session for a user. Returns a session cookie and a token
     try {
       // We're firstly closing any existing user session
@@ -20,14 +20,14 @@ class SessionService extends Service {
 
       // Then we create the token for the new session
 
-      var token = new Token({ userId: userid, username: username}, true);
+      var token = new Token({ userId: userid, username: username, alias: alias}, true);
       var encoded_token = token.encode();
 
       const session = await this.save({
         _id: token.sessionId,
         userid: userid,
         token: encoded_token,
-        secret: token.secret
+        token_secret: token.secret
       })
 
       return {
@@ -106,7 +106,8 @@ class SessionService extends Service {
 
   async get_all_my_sessions() {
     try {
-      return await this.getBy('userid', this.userid);
+      const sessions = await this.getBy('userid', this.userid);
+      return sessions.map( (session ) => session.toJSON());
     } catch (e) {
       throw ErrorHandler.stack(e, 'Could not list the sessions related with the user: ' + this.userid);
     }
@@ -116,8 +117,7 @@ class SessionService extends Service {
       // Returns a list of all active sessions
       try {
         var sessions = await this.getBy('active', 'true');
-        // Removing private params like the token_secret
-        return sessions.map( s => Utils.removeFromObject(this.get_doc(s), ['token_secret'], true));
+        return sessions.map( session => session.toJSON());
 
       } catch ( e ) {
         throw ErrorHandler.stack(e, 'Could not list the active sessions');
