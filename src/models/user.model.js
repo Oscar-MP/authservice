@@ -17,6 +17,15 @@ const userSchema = new Schema({
   }
 });
 
+userSchema.set('toJSON', {
+  transform: (doc, returnedObject) => {
+    returnedObject.id = returnedObject._id;
+    delete returnedObject._id;
+    delete returnedObject.__v;
+    delete returnedObject.password;
+  }
+});
+
 userSchema.pre('save', async function (next) {
     // This function will be executed before creating or updating a user.
     // It's important to hash the password in this function
